@@ -1,6 +1,8 @@
+'use server';
+
 import { z } from 'zod';
-import { defineFlow } from '@genkit-ai/core';
-import { googleVertexAi } from '@genkit-ai/vertexai';
+import { ai } from '@/ai/genkit';
+import {model} from '@genkit-ai/google-genai';
 
 const GenerateInterviewQuestionsInputSchema = z.object({
   role: z.string(),
@@ -12,29 +14,39 @@ const GenerateInterviewQuestionsInputSchema = z.object({
 
 export type GenerateInterviewQuestionsInput = z.infer<typeof GenerateInterviewQuestionsInputSchema>;
 
-export const generateInterviewQuestions = defineFlow({
-  name: 'generateInterviewQuestions',
-  inputSchema: GenerateInterviewQuestionsInputSchema,
-  outputSchema: z.object({ questions: z.string().array() }),
-  plugins: [googleVertexAi()],
-  transformInput: (input) => {
-    return `Generate 5 interview questions for a ${input.experienceLevel} ${input.role} specializing in ${input.specialty} on the topic of ${input.topic}${input.targetCompany ? ` targeting a position at ${input.targetCompany}` : ''}.`;
-  },
-  run: async (prompt, { plugins }) => {
-    const { content } = await plugins.googleVertexAi.generateText({
-      model: 'gemini-pro',
-      prompt: {
-        text: `${prompt}
+const GenerateInterviewQuestionsOutputSchema = z.object({
+  questions: z.array(z.string()),
+});
 
-        Return the questions as a numbered list.`,
+export type GenerateInterviewQuestionsOutput = z.infer<typeof GenerateInterviewQuestionsOutputSchema>;
+
+const interviewQuestionsPrompt = ai.definePrompt({
+  name: 'interviewQuestionsPrompt',
+  input: { schema: GenerateInterviewQuestionsInputSchema },
+  output: { schema: GenerateInterviewQuestionsOutputSchema },
+  prompt: `Generate 5 interview questions for a {{experienceLevel}} {{role}} specializing in {{specialty}} on the topic of {{topic}}{{#if targetCompany}} targeting a position at {{targetCompany}}{{/if}}.`,
+});
+
+export const generateInterviewQuestionsFlow = ai.defineFlow(
+  {
+    name: 'generateInterviewQuestionsFlow',
+    inputSchema: GenerateInterviewQuestionsInputSchema,
+    outputSchema: GenerateInterviewQuestionsOutputSchema,
+  },
+  async (input) => {
+    const llmResponse = await ai.generate({
+      model: model('gemini-pro'),
+      prompt: (await interviewQuestionsPrompt.render({input})).prompt,
+      output: {
+        format: 'json',
+        schema: GenerateInterviewQuestionsOutputSchema
       },
     });
 
-    const questions = content
-      .split('\n')
-      .map((line) => line.replace(/^\d+\.\s*/, '').trim())
-      .filter(Boolean);
-
-    return { questions };
-  },
-});
+    const output = llmResponse.output();
+    if (!output) {
+      throw new Error('No output from AI');
+    }
+    return output;
+  }
+);

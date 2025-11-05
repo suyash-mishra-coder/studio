@@ -1,6 +1,8 @@
+'use server';
+
 import { z } from 'zod';
-import { defineFlow } from '@genkit-ai/core';
-import { googleVertexAi } from '@genkit-ai/vertexai';
+import { ai } from '@/ai/genkit';
+import { model } from '@genkit-ai/google-genai';
 
 const ProvidePersonalizedFeedbackInputSchema = z.object({
   interviewTranscript: z.string(),
@@ -21,37 +23,41 @@ const ProvidePersonalizedFeedbackOutputSchema = z.object({
 
 export type ProvidePersonalizedFeedbackOutput = z.infer<typeof ProvidePersonalizedFeedbackOutputSchema>;
 
-export const providePersonalizedFeedback = defineFlow({
-  name: 'providePersonalizedFeedback',
-  inputSchema: ProvidePersonalizedFeedbackInputSchema,
-  outputSchema: ProvidePersonalizedFeedbackOutputSchema,
-  plugins: [googleVertexAi()],
-  transformInput: (input) => {
-    return `Given the following interview transcript for a ${input.experienceLevel} ${input.userRole} specializing in ${input.technicalSpecialty}${input.targetCompany ? ` targeting a position at ${input.targetCompany}` : ''}:\n\n${input.interviewTranscript}\n\nProvide a score out of 10, list strengths and weaknesses, and provide personalized improvement tips.`;
-  },
-  run: async (prompt, { plugins }) => {
-    const { content } = await plugins.googleVertexAi.generateText({
-      model: 'gemini-pro',
-      prompt: {
-        text: `${prompt}
+const feedbackPrompt = ai.definePrompt({
+  name: 'feedbackPrompt',
+  input: { schema: ProvidePersonalizedFeedbackInputSchema },
+  output: { schema: ProvidePersonalizedFeedbackOutputSchema },
+  prompt: `Given the following interview transcript for a {{experienceLevel}} {{userRole}} specializing in {{technicalSpecialty}}{{#if targetCompany}} targeting a position at {{targetCompany}}{{/if}}:
 
-        Return the result as a JSON object with the following keys: score, strengths, weaknesses, improvementTips.`,
+{{interviewTranscript}}
+
+Provide a score out of 10, list strengths and weaknesses, and provide personalized improvement tips.
+
+Return the result as a JSON object with the following keys: score, strengths, weaknesses, improvementTips.`,
+});
+
+export const providePersonalizedFeedbackFlow = ai.defineFlow(
+  {
+    name: 'providePersonalizedFeedbackFlow',
+    inputSchema: ProvidePersonalizedFeedbackInputSchema,
+    outputSchema: ProvidePersonalizedFeedbackOutputSchema,
+  },
+  async (input) => {
+    const llmResponse = await ai.generate({
+      model: model('gemini-pro'),
+      prompt: await feedbackPrompt.render({ input }),
+      output: {
+        format: 'json',
       },
-      maxOutputTokens: 1024,
+      config: {
+        temperature: 0.3,
+      },
     });
 
-    try {
-      const result = JSON.parse(content);
-      const parsedResult = ProvidePersonalizedFeedbackOutputSchema.parse({
-        score: Number(result.score),
-        strengths: result.strengths,
-        weaknesses: result.weaknesses,
-        improvementTips: result.improvementTips,
-      });
-      return parsedResult;
-    } catch (error) {
-      console.error('Error parsing feedback:', error);
-      throw new Error('Failed to parse feedback from the AI.');
+    const output = llmResponse.output();
+    if (!output) {
+      throw new Error('Failed to get feedback from AI');
     }
-  },
-});
+    return ProvidePersonalizedFeedbackOutputSchema.parse(output);
+  }
+);

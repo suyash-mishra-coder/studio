@@ -1,11 +1,11 @@
 'use server';
 
-import { generateInterviewQuestions, GenerateInterviewQuestionsInput } from '@/ai/flows/generate-interview-questions';
-import { providePersonalizedFeedback, ProvidePersonalizedFeedbackInput } from '@/ai/flows/provide-personalized-feedback';
+import { generateInterviewQuestionsFlow, GenerateInterviewQuestionsInput } from '@/ai/flows/generate-interview-questions';
+import { providePersonalizedFeedbackFlow, ProvidePersonalizedFeedbackInput } from '@/ai/flows/provide-personalized-feedback';
 
 export async function getInterviewQuestions(input: GenerateInterviewQuestionsInput) {
   try {
-    const result = await generateInterviewQuestions(input);
+    const result = await generateInterviewQuestionsFlow(input);
     return result;
   } catch (error) {
     console.error('Error generating interview questions:', error);
@@ -23,7 +23,7 @@ export async function getInterviewQuestions(input: GenerateInterviewQuestionsInp
 
 export async function getPersonalizedFeedback(input: ProvidePersonalizedFeedbackInput) {
   try {
-    const result = await providePersonalizedFeedback(input);
+    const result = await providePersonalizedFeedbackFlow(input);
     return result;
   } catch (error) {
     console.error('Error providing personalized feedback:', error);
