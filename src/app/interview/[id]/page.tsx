@@ -11,6 +11,7 @@ import { Progress } from '@/components/ui/progress';
 import { getInterviewQuestions } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 const INTERVIEW_DURATION_MIN = 45;
 
@@ -113,6 +114,7 @@ export default function InterviewPage() {
   const [transcript, setTranscript] = React.useState<string[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [isFinishing, setIsFinishing] = React.useState(false);
+  const aiAvatar = PlaceHolderImages.find(p => p.id === 'ai-avatar');
 
   React.useEffect(() => {
     async function fetchQuestions() {
@@ -144,20 +146,21 @@ export default function InterviewPage() {
   }, [toast]);
 
   const handleNextQuestion = () => {
-    setTranscript(prev => [...prev, `Q: ${questions[currentQuestionIndex]}`, `A: ${userAnswer}`]);
+    const newTranscript = [...transcript, `Q: ${questions[currentQuestionIndex]}`, `A: ${userAnswer}`];
+    setTranscript(newTranscript);
     setUserAnswer('');
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(prev => prev + 1);
     } else {
-      finishInterview();
+      finishInterview(newTranscript);
     }
   };
 
-  const finishInterview = () => {
+  const finishInterview = (finalTranscript: string[]) => {
     setIsFinishing(true);
     // In a real app, we'd save the transcript and then redirect.
     // For MVP, we'll just simulate this and redirect.
-    console.log("Interview Finished. Transcript:", transcript);
+    console.log("Interview Finished. Transcript:", finalTranscript);
     setTimeout(() => {
       router.push('/feedback/session-1');
     }, 1500);
@@ -182,7 +185,7 @@ export default function InterviewPage() {
         <Progress value={progress} className="w-full" />
         <div className="flex justify-between items-center mt-2 text-sm text-muted-foreground">
           <span>Question {currentQuestionIndex + 1} of {questions.length}</span>
-          <InterviewTimer onFinish={finishInterview} />
+          <InterviewTimer onFinish={() => finishInterview(transcript)} />
         </div>
       </header>
 
@@ -193,7 +196,7 @@ export default function InterviewPage() {
             <CardContent className="p-6">
               <div className="flex items-start gap-4">
                 <Avatar>
-                  <AvatarImage data-ai-hint="robot abstract" src="https://picsum.photos/seed/ai-avatar/100/100" />
+                  <AvatarImage data-ai-hint={aiAvatar?.imageHint} src={aiAvatar?.imageUrl} />
                   <AvatarFallback><Bot /></AvatarFallback>
                 </Avatar>
                 <div>

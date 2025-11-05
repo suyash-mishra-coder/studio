@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { useParams } from 'next/navigation';
-import { ThumbsUp, ThumbsDown, Sparkles, Star, Loader, BookOpen, Clock } from 'lucide-react';
+import { ThumbsUp, ThumbsDown, Sparkles, Star, Loader, BookOpen, Clock, Bot } from 'lucide-react';
 import { format } from 'date-fns';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,6 +11,8 @@ import { getFeedback, getSession } from '@/lib/data';
 import type { InterviewFeedback, InterviewSession } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 function ScoreCircle({ score }: { score: number }) {
   const circumference = 2 * Math.PI * 45;
@@ -60,6 +62,8 @@ export default function FeedbackPage() {
   const [feedback, setFeedback] = React.useState<InterviewFeedback | null>(null);
   const [session, setSession] = React.useState<InterviewSession | null>(null);
   const [loading, setLoading] = React.useState(true);
+
+  const aiAvatar = PlaceHolderImages.find(p => p.id === 'ai-avatar');
 
   React.useEffect(() => {
     async function loadFeedback() {
@@ -173,7 +177,7 @@ export default function FeedbackPage() {
                 <div key={index} className={`flex gap-3 ${item.type === 'answer' ? 'justify-end' : 'justify-start'}`}>
                   {item.type === 'question' && (
                     <Avatar className="h-8 w-8">
-                      <AvatarImage data-ai-hint="robot abstract" src="https://picsum.photos/seed/ai-avatar/100/100" />
+                      <AvatarImage data-ai-hint={aiAvatar?.imageHint} src={aiAvatar?.imageUrl} />
                       <AvatarFallback><Bot size={16} /></AvatarFallback>
                     </Avatar>
                   )}
