@@ -49,7 +49,7 @@ export const mockFeedbacks: Record<string, InterviewFeedback> = {
     improvementTips: '1. Practice the STAR method to structure your answers. 2. Research common MLOps tools and workflows. 3. Prepare a 1-minute and a 5-minute explanation for your key projects.',
     transcript: [
       { type: 'question', content: 'What is the difference between classification and regression?', timestamp: Date.now() - 100000 },
-      { type 'answer', content: 'Classification is for predicting a discrete class label, like "spam" or "not spam". Regression is for predicting a continuous quantity, like the price of a house.', timestamp: Date.now() - 80000 },
+      { type: 'answer', content: 'Classification is for predicting a discrete class label, like "spam" or "not spam". Regression is for predicting a continuous quantity, like the price of a house.', timestamp: Date.now() - 80000 },
     ],
   }
 };
