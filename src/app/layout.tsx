@@ -25,6 +25,9 @@ export default function RootLayout({
       <body className={cn('font-body antialiased min-h-screen flex flex-col')}>
         <Header />
         <main className="flex-1">{children}</main>
+        <footer className="py-4 text-center text-sm text-muted-foreground">
+          Developed by Suyash Mishra
+        </footer>
         <Toaster />
       </body>
     </html>

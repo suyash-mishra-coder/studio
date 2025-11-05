@@ -47,7 +47,7 @@ function VideoFeed() {
   const videoRef = React.useRef<HTMLVideoElement>(null);
   const [mediaStream, setMediaStream] = React.useState<MediaStream | null>(null);
   const [isMicOn, setMicOn] = React.useState(true);
-  const [isCameraOn, setCameraOn] = React.useState(true);
+  const [isCameraOn, setCameraOn] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
 
   React.useEffect(() => {
@@ -57,6 +57,8 @@ function VideoFeed() {
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
         }
+        // Turn camera off by default
+        stream.getVideoTracks().forEach(track => track.enabled = false);
         setMediaStream(stream);
       } catch (err) {
         console.error("Error accessing media devices.", err);
@@ -71,12 +73,14 @@ function VideoFeed() {
   }, []);
 
   const toggleCamera = () => {
-    mediaStream?.getVideoTracks().forEach(track => track.enabled = !isCameraOn);
+    if (!mediaStream) return;
+    mediaStream.getVideoTracks().forEach(track => track.enabled = !isCameraOn);
     setCameraOn(!isCameraOn);
   }
 
   const toggleMic = () => {
-    mediaStream?.getAudioTracks().forEach(track => track.enabled = !isMicOn);
+    if (!mediaStream) return;
+    mediaStream.getAudioTracks().forEach(track => track.enabled = !isMicOn);
     setMicOn(!isMicOn);
   }
 
@@ -91,9 +95,15 @@ function VideoFeed() {
   }
 
   return (
-    <Card className="overflow-hidden relative aspect-video shadow-lg">
-      <video ref={videoRef} autoPlay muted className="w-full h-full object-cover" />
+    <Card className="overflow-hidden relative aspect-video shadow-lg bg-black">
+      <video ref={videoRef} autoPlay muted className={`w-full h-full object-cover transition-opacity ${isCameraOn ? 'opacity-100' : 'opacity-0'}`} />
       {!mediaStream && <div className="absolute inset-0 bg-black/80 flex items-center justify-center text-white"><Loader className="animate-spin" /></div>}
+      {!isCameraOn && (
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-muted-foreground">
+          <VideoOff className="h-16 w-16" />
+          <p className="mt-2">Camera is off</p>
+        </div>
+      )}
       <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex items-center gap-2">
           <Button size="icon" variant={isCameraOn ? 'secondary' : 'destructive'} onClick={toggleCamera}>
             {isCameraOn ? <Video className="h-5 w-5"/> : <VideoOff className="h-5 w-5"/>}
@@ -146,7 +156,7 @@ export default function InterviewPage() {
     fetchQuestions();
   }, [toast]);
 
-  const finishInterview = React.useCallback(() => {
+  const finishInterview = React.useCallback((currentAnswer?: string) => {
     if (isFinishing) return;
     setIsFinishing(true);
     
@@ -154,8 +164,8 @@ export default function InterviewPage() {
     const finalTranscript = [
       ...transcript,
       { type: 'question', content: questions[currentQuestionIndex], timestamp: Date.now() },
-      { type: 'answer', content: userAnswer, timestamp: Date.now() }
-    ].filter(item => item.content.trim() !== ''); // Ensure we don't save empty answers
+      { type: 'answer', content: currentAnswer || userAnswer, timestamp: Date.now() }
+    ].filter(item => item?.content?.trim() !== '');
 
     // In a real app, we'd save the transcript and then redirect.
     // For MVP, we'll just simulate this and redirect.
@@ -165,15 +175,15 @@ export default function InterviewPage() {
       // and redirect to the feedback page for that new session.
       router.push('/feedback/session-1'); 
     }, 1500);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isFinishing, transcript, questions, currentQuestionIndex, userAnswer, router]);
 
 
   const handleNextQuestion = () => {
+    const currentAnswer = userAnswer;
     const newTranscript: InterviewTranscriptItem[] = [
       ...transcript,
       { type: 'question', content: questions[currentQuestionIndex], timestamp: Date.now() },
-      { type: 'answer', content: userAnswer, timestamp: Date.now() }
+      { type: 'answer', content: currentAnswer, timestamp: Date.now() }
     ];
     
     setTranscript(newTranscript);
@@ -182,7 +192,7 @@ export default function InterviewPage() {
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(prev => prev + 1);
     } else {
-      finishInterview();
+      finishInterview(currentAnswer);
     }
   };
   
@@ -205,7 +215,7 @@ export default function InterviewPage() {
         <Progress value={progress} className="w-full" />
         <div className="flex justify-between items-center mt-2 text-sm text-muted-foreground">
           <span>Question {currentQuestionIndex + 1} of {questions.length}</span>
-          <InterviewTimer onFinish={finishInterview} />
+          <InterviewTimer onFinish={() => finishInterview(userAnswer)} />
         </div>
       </header>
 
