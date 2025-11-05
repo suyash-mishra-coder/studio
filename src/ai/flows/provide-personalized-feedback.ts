@@ -2,7 +2,6 @@
 
 import { z } from 'zod';
 import { ai } from '@/ai/genkit';
-import { model } from '@genkit-ai/google-genai';
 
 const ProvidePersonalizedFeedbackInputSchema = z.object({
   interviewTranscript: z.string(),
@@ -43,18 +42,7 @@ export const providePersonalizedFeedbackFlow = ai.defineFlow(
     outputSchema: ProvidePersonalizedFeedbackOutputSchema,
   },
   async (input) => {
-    const llmResponse = await ai.generate({
-      model: model('gemini-pro'),
-      prompt: await feedbackPrompt.render({ input }),
-      output: {
-        format: 'json',
-      },
-      config: {
-        temperature: 0.3,
-      },
-    });
-
-    const output = llmResponse.output();
+    const { output } = await feedbackPrompt(input);
     if (!output) {
       throw new Error('Failed to get feedback from AI');
     }

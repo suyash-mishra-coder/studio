@@ -2,7 +2,6 @@
 
 import { z } from 'zod';
 import { ai } from '@/ai/genkit';
-import {model} from '@genkit-ai/google-genai';
 
 const GenerateInterviewQuestionsInputSchema = z.object({
   role: z.string(),
@@ -34,16 +33,8 @@ export const generateInterviewQuestionsFlow = ai.defineFlow(
     outputSchema: GenerateInterviewQuestionsOutputSchema,
   },
   async (input) => {
-    const llmResponse = await ai.generate({
-      model: model('gemini-pro'),
-      prompt: (await interviewQuestionsPrompt.render({input})).prompt,
-      output: {
-        format: 'json',
-        schema: GenerateInterviewQuestionsOutputSchema
-      },
-    });
-
-    const output = llmResponse.output();
+    const { output } = await interviewQuestionsPrompt(input);
+    
     if (!output) {
       throw new Error('No output from AI');
     }
