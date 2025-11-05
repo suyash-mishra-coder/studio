@@ -1,4 +1,4 @@
-import type { InterviewSession, InterviewFeedback } from './types';
+import type { InterviewSession, InterviewFeedback, InterviewTranscriptItem } from './types';
 
 const today = new Date();
 const yesterday = new Date(today);
@@ -55,15 +55,63 @@ export const mockFeedbacks: Record<string, InterviewFeedback> = {
 };
 
 export const getSessions = async (): Promise<InterviewSession[]> => {
-  return Promise.resolve(mockSessions);
+  // In a real app, this would check local storage or make a fetch request
+  const savedSessions = localStorage.getItem('mockview-sessions');
+  const allSessions = savedSessions ? [...mockSessions, ...JSON.parse(savedSessions)] : mockSessions;
+  return Promise.resolve(allSessions);
 };
 
 export const getSession = async (id: string): Promise<InterviewSession | undefined> => {
-  return Promise.resolve(mockSessions.find(s => s.id === id));
+  const allSessions = await getSessions();
+  return Promise.resolve(allSessions.find(s => s.id === id));
 };
 
 export const getFeedback = async (sessionId: string): Promise<InterviewFeedback | undefined> => {
-  // In a real app, this might be a more complex lookup
+  // Check mock feedbacks first
   const feedbackId = Object.keys(mockFeedbacks).find(key => mockFeedbacks[key].sessionId === sessionId);
-  return Promise.resolve(feedbackId ? mockFeedbacks[feedbackId] : undefined);
+  if (feedbackId) {
+    return Promise.resolve(mockFeedbacks[feedbackId]);
+  }
+  
+  // Check local storage for dynamic feedbacks
+  const savedFeedbacks = localStorage.getItem('mockview-feedbacks');
+  if (savedFeedbacks) {
+    const feedbacks = JSON.parse(savedFeedbacks) as Record<string, InterviewFeedback>;
+    return Promise.resolve(feedbacks[sessionId]);
+  }
+  
+  return Promise.resolve(undefined);
+};
+
+export const saveSession = async (session: Omit<InterviewSession, 'id'>, transcript: InterviewTranscriptItem[]): Promise<string> => {
+  const sessionId = `session-${Date.now()}`;
+  
+  const newSession: InterviewSession = {
+    ...session,
+    id: sessionId,
+  };
+
+  const newFeedback: InterviewFeedback = {
+    id: `feedback-${Date.now()}`,
+    sessionId: sessionId,
+    score: 0, // This will be updated by the AI feedback later
+    strengths: '',
+    weaknesses: '',
+    improvementTips: '',
+    transcript: transcript,
+  };
+
+  // Save session to local storage
+  const savedSessions = localStorage.getItem('mockview-sessions');
+  const sessions = savedSessions ? JSON.parse(savedSessions) : [];
+  sessions.push(newSession);
+  localStorage.setItem('mockview-sessions', JSON.stringify(sessions));
+
+  // Save feedback transcript to local storage
+  const savedFeedbacks = localStorage.getItem('mockview-feedbacks');
+  const feedbacks = savedFeedbacks ? JSON.parse(savedFeedbacks) : {};
+  feedbacks[sessionId] = newFeedback;
+  localStorage.setItem('mockview-feedbacks', JSON.stringify(feedbacks));
+
+  return Promise.resolve(sessionId);
 };
