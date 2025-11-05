@@ -16,7 +16,14 @@ import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 function ScoreCircle({ score }: { score: number }) {
   const circumference = 2 * Math.PI * 45;
-  const offset = circumference - (score / 10) * circumference;
+  const [offset, setOffset] = React.useState(circumference);
+
+  React.useEffect(() => {
+    // Animate the circle drawing
+    const timer = setTimeout(() => setOffset(circumference - (score / 10) * circumference), 100);
+    return () => clearTimeout(timer);
+  }, [score, circumference]);
+
 
   let colorClass = 'text-accent';
   if (score < 7) colorClass = 'text-yellow-500';
@@ -100,7 +107,7 @@ export default function FeedbackPage() {
 
   return (
     <div className="container mx-auto max-w-5xl py-8 px-4">
-      <header className="mb-8">
+      <header className="mb-8 animate-fade-in-up">
         <h1 className="font-headline text-4xl font-bold text-primary">Interview Feedback</h1>
         <div className="flex items-center gap-4 mt-2 text-muted-foreground">
           <Badge variant="secondary">{session.role}</Badge>
@@ -110,7 +117,7 @@ export default function FeedbackPage() {
       </header>
       
       <div className="grid md:grid-cols-3 gap-8">
-        <Card className="md:col-span-1 flex flex-col items-center justify-center text-center p-6 shadow-lg">
+        <Card className="md:col-span-1 flex flex-col items-center justify-center text-center p-6 shadow-lg animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
           <CardHeader>
             <CardTitle className="font-headline">Overall Score</CardTitle>
           </CardHeader>
@@ -120,7 +127,7 @@ export default function FeedbackPage() {
         </Card>
 
         <div className="md:col-span-2 space-y-8">
-          <Card className="shadow-lg">
+          <Card className="shadow-lg animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
             <CardHeader>
               <div className="flex items-center gap-3">
                 <ThumbsUp className="h-6 w-6 text-accent" />
@@ -132,7 +139,7 @@ export default function FeedbackPage() {
             </CardContent>
           </Card>
 
-          <Card className="shadow-lg">
+          <Card className="shadow-lg animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
             <CardHeader>
               <div className="flex items-center gap-3">
                 <ThumbsDown className="h-6 w-6 text-destructive" />
@@ -144,7 +151,7 @@ export default function FeedbackPage() {
             </CardContent>
           </Card>
 
-          <Card className="shadow-lg">
+          <Card className="shadow-lg animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
             <CardHeader>
               <div className="flex items-center gap-3">
                 <Sparkles className="h-6 w-6 text-primary" />
@@ -162,7 +169,7 @@ export default function FeedbackPage() {
         </div>
       </div>
       
-      <div className="mt-12">
+      <div className="mt-12 animate-fade-in-up" style={{ animationDelay: '0.5s' }}>
         <Card className="shadow-lg">
           <CardHeader>
             <div className="flex items-center gap-3">

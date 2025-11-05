@@ -170,7 +170,7 @@ function PreInterviewForm() {
           />
         </div>
 
-        <Button type="submit" size="lg" className="w-full" disabled={formState.isSubmitting}>
+        <Button type="submit" size="lg" className="w-full transition-transform hover:scale-105" disabled={formState.isSubmitting}>
           {formState.isSubmitting ? 'Starting...' : 'Start Your Mock Interview'}
         </Button>
       </form>
@@ -182,7 +182,7 @@ export default function Home() {
   return (
     <div className="flex flex-col items-center justify-center min-h-full p-4 md:p-8">
       <div className="w-full max-w-4xl">
-        <header className="text-center mb-10">
+        <header className="text-center mb-10 animate-fade-in-up">
           <div className="inline-block bg-primary/10 p-4 rounded-lg mb-4">
             <Logo className="h-12 w-12 text-primary" />
           </div>
@@ -194,7 +194,7 @@ export default function Home() {
           </p>
         </header>
 
-        <Card className="shadow-2xl">
+        <Card className="shadow-2xl animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
           <CardHeader>
             <CardTitle className="text-2xl font-headline">Prepare Your Interview</CardTitle>
             <CardDescription>

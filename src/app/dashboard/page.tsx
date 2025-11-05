@@ -59,10 +59,10 @@ export default function DashboardPage() {
 
   return (
     <div className="container mx-auto py-8 px-4">
-      <h1 className="font-headline text-3xl font-bold mb-8 text-primary">Your Dashboard</h1>
+      <h1 className="font-headline text-3xl font-bold mb-8 text-primary animate-fade-in-up">Your Dashboard</h1>
 
       <div className="grid gap-8">
-        <Card className="shadow-lg">
+        <Card className="shadow-lg animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
           <CardHeader>
             <div className="flex items-center gap-3">
               <BarChart className="h-6 w-6 text-primary" />
@@ -100,7 +100,7 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card className="shadow-lg">
+        <Card className="shadow-lg animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
           <CardHeader>
             <div className="flex items-center gap-3">
               <History className="h-6 w-6 text-primary" />
@@ -144,7 +144,7 @@ export default function DashboardPage() {
                         </Badge>
                       </TableCell>
                       <TableCell className="text-right">
-                        <Button variant="ghost" size="icon" asChild>
+                        <Button variant="ghost" size="icon" asChild className="transition-transform hover:scale-110">
                           <Link href={`/feedback/${session.id}`}>
                             <ChevronRight className="h-4 w-4" />
                           </Link>

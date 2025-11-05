@@ -22,10 +22,10 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet" />
         <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
       </head>
-      <body className={cn('font-body antialiased min-h-screen flex flex-col')}>
+      <body className={cn('font-body antialiased min-h-screen flex flex-col bg-background')}>
         <Header />
-        <main className="flex-1">{children}</main>
-        <footer className="py-4 text-center text-sm text-muted-foreground">
+        <main className="flex-1 animate-fade-in">{children}</main>
+        <footer className="py-4 text-center text-sm text-muted-foreground border-t">
           Developed by Suyash Mishra
         </footer>
         <Toaster />
