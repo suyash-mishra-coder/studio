@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { useRouter, useParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { AlertTriangle, Bot, Clapperboard, Code2, Loader, Mic, MicOff, Send, Video, VideoOff, CheckCircle, Timer } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -12,6 +12,7 @@ import { getInterviewQuestions } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
+import type { InterviewTranscriptItem } from '@/lib/types';
 
 const INTERVIEW_DURATION_MIN = 45;
 
@@ -111,7 +112,7 @@ export default function InterviewPage() {
   const [questions, setQuestions] = React.useState<string[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = React.useState(0);
   const [userAnswer, setUserAnswer] = React.useState('');
-  const [transcript, setTranscript] = React.useState<string[]>([]);
+  const [transcript, setTranscript] = React.useState<InterviewTranscriptItem[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [isFinishing, setIsFinishing] = React.useState(false);
   const aiAvatar = PlaceHolderImages.find(p => p.id === 'ai-avatar');
@@ -145,25 +146,44 @@ export default function InterviewPage() {
     fetchQuestions();
   }, [toast]);
 
-  const handleNextQuestion = () => {
-    const newTranscript = [...transcript, `Q: ${questions[currentQuestionIndex]}`, `A: ${userAnswer}`];
-    setTranscript(newTranscript);
-    setUserAnswer('');
-    if (currentQuestionIndex < questions.length - 1) {
-      setCurrentQuestionIndex(prev => prev + 1);
-    } else {
-      finishInterview(newTranscript);
-    }
-  };
-
-  const finishInterview = (finalTranscript: string[]) => {
+  const finishInterview = React.useCallback(() => {
+    if (isFinishing) return;
     setIsFinishing(true);
+    
+    // Capture the final answer if it exists
+    const finalTranscript = [
+      ...transcript,
+      { type: 'question', content: questions[currentQuestionIndex], timestamp: Date.now() },
+      { type: 'answer', content: userAnswer, timestamp: Date.now() }
+    ].filter(item => item.content.trim() !== ''); // Ensure we don't save empty answers
+
     // In a real app, we'd save the transcript and then redirect.
     // For MVP, we'll just simulate this and redirect.
     console.log("Interview Finished. Transcript:", finalTranscript);
     setTimeout(() => {
-      router.push('/feedback/session-1');
+      // Here you would typically save `finalTranscript` to your backend
+      // and redirect to the feedback page for that new session.
+      router.push('/feedback/session-1'); 
     }, 1500);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isFinishing, transcript, questions, currentQuestionIndex, userAnswer, router]);
+
+
+  const handleNextQuestion = () => {
+    const newTranscript: InterviewTranscriptItem[] = [
+      ...transcript,
+      { type: 'question', content: questions[currentQuestionIndex], timestamp: Date.now() },
+      { type: 'answer', content: userAnswer, timestamp: Date.now() }
+    ];
+    
+    setTranscript(newTranscript);
+    setUserAnswer('');
+
+    if (currentQuestionIndex < questions.length - 1) {
+      setCurrentQuestionIndex(prev => prev + 1);
+    } else {
+      finishInterview();
+    }
   };
   
   if (loading) {
@@ -185,7 +205,7 @@ export default function InterviewPage() {
         <Progress value={progress} className="w-full" />
         <div className="flex justify-between items-center mt-2 text-sm text-muted-foreground">
           <span>Question {currentQuestionIndex + 1} of {questions.length}</span>
-          <InterviewTimer onFinish={() => finishInterview(transcript)} />
+          <InterviewTimer onFinish={finishInterview} />
         </div>
       </header>
 
