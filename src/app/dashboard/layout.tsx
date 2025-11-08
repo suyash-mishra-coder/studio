@@ -8,6 +8,9 @@ import { Logo } from '@/components/icons';
 import { cn } from '@/lib/utils';
 import Header from '@/components/layout/header';
 import { Sidebar, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarHeader, SidebarFooter } from '@/components/ui/sidebar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { Separator } from '@/components/ui/separator';
 
 const navLinks = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -17,6 +20,8 @@ const navLinks = [
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const userAvatar = PlaceHolderImages.find(p => p.id === 'user-avatar');
+  const userName = "Alex Doe";
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-muted/40">
@@ -49,6 +54,22 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </SidebarMenu>
         </SidebarContent>
          <SidebarFooter>
+            <Separator className="my-2" />
+             <div className="p-2 group-data-[collapsible=icon]:p-0 group-data-[collapsible=icon]:-translate-x-1">
+                <div className="flex items-center gap-3 p-2 rounded-md group-data-[collapsible=icon]:p-0 group-data-[collapsible=icon]:justify-center">
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage data-ai-hint={userAvatar?.imageHint} src={userAvatar?.imageUrl} alt={userName} />
+                      <AvatarFallback>{userName.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                    <div className="flex flex-col overflow-hidden group-data-[collapsible=icon]:hidden">
+                        <p className="text-sm font-medium leading-none truncate">{userName}</p>
+                        <p className="text-xs leading-none text-muted-foreground truncate">
+                            alex.doe@example.com
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <Separator className="my-2" />
             <SidebarMenu>
                 <SidebarMenuItem>
                     <SidebarMenuButton
