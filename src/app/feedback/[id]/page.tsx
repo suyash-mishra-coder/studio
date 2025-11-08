@@ -71,6 +71,7 @@ export default function FeedbackPage() {
   const [loading, setLoading] = React.useState(true);
 
   const aiAvatar = PlaceHolderImages.find(p => p.id === 'ai-avatar');
+  const userAvatar = PlaceHolderImages.find(p => p.id === 'user-avatar');
 
   React.useEffect(() => {
     async function loadFeedback() {
@@ -193,7 +194,7 @@ export default function FeedbackPage() {
                   </div>
                   {item.type === 'answer' && (
                     <Avatar className="h-8 w-8">
-                      <AvatarImage src="https://picsum.photos/seed/user-avatar/40/40" />
+                      <AvatarImage data-ai-hint={userAvatar?.imageHint} src={userAvatar?.imageUrl} />
                       <AvatarFallback>{(session.name || 'U').charAt(0)}</AvatarFallback>
                     </Avatar>
                   )}
