@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import * as React from 'react';
@@ -28,6 +29,7 @@ import {
 } from '@/components/ui/select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { EXPERIENCE_LEVELS, SPECIALTIES } from '@/lib/constants';
+import Footer from '@/components/layout/footer';
 
 const formSchema = z.object({
   name: z.string().min(2, { message: 'Please enter your name.' }),
@@ -179,7 +181,7 @@ export default function Home() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4 md:p-8 bg-background">
-      <div className="w-full max-w-lg">
+      <div className="w-full max-w-lg flex flex-col flex-1 justify-center">
         <header className="text-center mb-10 animate-fade-in-up">
           <motion.h1 
             className="font-headline text-4xl md:text-5xl font-bold text-foreground"
@@ -261,6 +263,7 @@ export default function Home() {
           )}
         </AnimatePresence>
       </div>
+       <Footer />
     </div>
   );
 }

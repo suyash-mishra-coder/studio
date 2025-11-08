@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import * as React from 'react';
@@ -12,6 +13,7 @@ import { Sidebar, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButto
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Separator } from '@/components/ui/separator';
+import Footer from '@/components/layout/footer';
 
 const navLinks = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -95,9 +97,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <main className="flex-1 p-4 sm:px-6 sm:py-4 md:gap-8">
             {children}
         </main>
-        <footer className="p-4 text-center text-xs text-muted-foreground sm:px-6">
-            © 2024 Mockview AI. All Rights Reserved. Developed by Suyash Mishra.
-        </footer>
+        <Footer />
       </div>
     </div>
   );

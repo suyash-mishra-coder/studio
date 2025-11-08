@@ -3,6 +3,7 @@ import './globals.css';
 import { cn } from '@/lib/utils';
 import { Toaster } from '@/components/ui/toaster';
 import { SidebarProvider } from '@/components/ui/sidebar';
+import Footer from '@/components/layout/footer';
 
 export const metadata: Metadata = {
   title: 'Mockview AI',
@@ -23,7 +24,9 @@ export default function RootLayout({
       </head>
       <body className={cn('font-body antialiased min-h-screen flex flex-col bg-background')}>
         <SidebarProvider>
-          {children}
+          <div className="flex flex-col flex-1">
+            {children}
+          </div>
         </SidebarProvider>
         <Toaster />
       </body>
