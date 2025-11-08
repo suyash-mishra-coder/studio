@@ -178,14 +178,24 @@ function PreInterviewForm() {
 }
 
 export default function Home() {
-  const [showForm, setShowForm] = React.useState(false);
+  const [step, setStep] = React.useState(0);
+  const [name, setName] = React.useState('');
+
+  const handleStart = () => setStep(1);
+
+  const handleNameSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (name.trim()) {
+        setStep(2);
+    }
+  }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-full p-4 md:p-8 bg-gray-50">
-      <div className="w-full max-w-4xl">
+    <div className="flex flex-col items-center justify-center min-h-screen p-4 md:p-8 bg-background">
+      <div className="w-full max-w-lg">
         <header className="text-center mb-10 animate-fade-in-up">
           <motion.h1 
-            className="font-headline text-4xl md:text-5xl font-bold text-gray-800"
+            className="font-headline text-4xl md:text-5xl font-bold text-foreground"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
@@ -202,30 +212,56 @@ export default function Home() {
           </motion.p>
         </header>
 
-        <AnimatePresence>
-          {!showForm ? (
+        <AnimatePresence mode="wait">
+          {step === 0 && (
             <motion.div
-              key="button"
+              key="step0"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.3 }}
               className="text-center"
             >
-              <Button size="lg" className="text-lg px-8 py-6" onClick={() => setShowForm(true)}>
+              <Button size="lg" className="text-lg px-8 py-6" onClick={handleStart}>
                 Get Started
               </Button>
             </motion.div>
-          ) : (
+          )}
+
+          {step === 1 && (
             <motion.div
-              key="form"
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
+                key="step1"
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.3 }}
+                className="text-center"
+            >
+                <h2 className="text-2xl font-semibold mb-4">Welcome! What should we call you?</h2>
+                 <form onSubmit={handleNameSubmit} className="flex gap-2">
+                    <Input 
+                        type="text"
+                        placeholder="Enter your name..."
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        className="text-center text-lg h-12"
+                        autoFocus
+                    />
+                    <Button type="submit" size="lg" className="h-12">Continue</Button>
+                 </form>
+            </motion.div>
+          )}
+          
+          {step === 2 && (
+            <motion.div
+              key="step2"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.4, ease: 'easeOut' }}
             >
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-2xl font-headline">Prepare Your Interview</CardTitle>
+                  <CardTitle className="text-2xl font-headline">Prepare Your Interview, {name}</CardTitle>
                   <CardDescription>
                     Configure your mock interview to match the role you're applying for.
                   </CardDescription>

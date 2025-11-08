@@ -15,6 +15,8 @@ import {
   ChartYAxis,
   ChartBar,
 } from '@/components/ui/chart';
+import * as RechartsPrimitive from "recharts"
+
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -91,16 +93,70 @@ export default function DashboardPage() {
 
 
   return (
-    <div className="container mx-auto py-8 px-4">
-      <h1 className="text-3xl font-bold mb-8 text-foreground animate-fade-in-up">Your Dashboard</h1>
+    <div className="flex-1 space-y-4 p-8 pt-6">
+        <div className="flex items-center justify-between space-y-2">
+            <h1 className="text-3xl font-bold tracking-tight text-foreground">Dashboard</h1>
+        </div>
 
-      <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-        <Card className="lg:col-span-2 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Total Interviews
+                </CardTitle>
+                <Users className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{sessions.length}</div>
+                <p className="text-xs text-muted-foreground">
+                  Keep up the great work!
+                </p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Average Score
+                </CardTitle>
+                <TrendingUp className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{(sessions.reduce((acc, s) => acc + (s.score || 0), 0) / sessions.length || 0).toFixed(1)}/10</div>
+                <p className="text-xs text-muted-foreground">
+                  Your average performance
+                </p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Best Specialty</CardTitle>
+                <BarChart className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                 <div className="text-2xl font-bold truncate">{specialtyScoreData.length > 0 ? specialtyScoreData.sort((a,b) => b.score - a.score)[0].specialty : 'N/A'}</div>
+                <p className="text-xs text-muted-foreground">
+                  Your top performing area
+                </p>
+              </CardContent>
+            </Card>
+             <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Practice Topics</CardTitle>
+                <BookOpen className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{[...new Set(sessions.map(s => s.specialty))].length}</div>
+                <p className="text-xs text-muted-foreground">
+                  Number of unique specialties practiced
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+        <Card className="lg:col-span-4">
           <CardHeader>
-            <div className="flex items-center gap-3">
-              <TrendingUp className="h-6 w-6 text-primary" />
-              <CardTitle>Performance Trend</CardTitle>
-            </div>
+            <CardTitle>Performance Trend</CardTitle>
             <CardDescription>Your mock interview scores over the last 10 sessions.</CardDescription>
           </CardHeader>
           <CardContent>
@@ -133,12 +189,9 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
         
-        <Card className="animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+        <Card className="lg:col-span-3">
             <CardHeader>
-                <div className="flex items-center gap-3">
-                    <BarChart className="h-6 w-6 text-primary" />
-                    <CardTitle>Scores by Specialty</CardTitle>
-                </div>
+                <CardTitle>Scores by Specialty</CardTitle>
                 <CardDescription>Your average score in each area.</CardDescription>
             </CardHeader>
             <CardContent>
@@ -176,13 +229,17 @@ export default function DashboardPage() {
             </CardContent>
         </Card>
 
-        <Card className="lg:col-span-3 animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
+        <Card className="lg:col-span-7">
           <CardHeader>
-            <div className="flex items-center gap-3">
-              <History className="h-6 w-6 text-primary" />
-              <CardTitle>Session History</CardTitle>
+            <div className="flex items-center justify-between">
+                <div>
+                    <CardTitle>Recent Sessions</CardTitle>
+                    <CardDescription>Review your past mock interviews and feedback.</CardDescription>
+                </div>
+                 <Button asChild variant="ghost">
+                    <Link href="#">View All</Link>
+                </Button>
             </div>
-            <CardDescription>Review your past mock interviews and feedback.</CardDescription>
           </CardHeader>
           <CardContent>
             <Table>
