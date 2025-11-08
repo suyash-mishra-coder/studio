@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Bot, LayoutDashboard, Plus } from 'lucide-react';
+import { Bot, LayoutDashboard, Plus, User } from 'lucide-react';
 import { Logo } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -54,7 +54,7 @@ export default function Header() {
               <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                 <Avatar className="h-8 w-8">
                   <AvatarImage src="https://picsum.photos/seed/user-avatar/40/40" alt="User" />
-                  <AvatarFallback>U</AvatarFallback>
+                  <AvatarFallback><User size={16}/></AvatarFallback>
                 </Avatar>
               </Button>
             </DropdownMenuTrigger>

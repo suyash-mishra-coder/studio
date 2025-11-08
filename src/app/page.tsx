@@ -30,6 +30,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { EXPERIENCE_LEVELS, SPECIALTIES } from '@/lib/constants';
 
 const formSchema = z.object({
+  name: z.string().min(2, { message: 'Please enter your name.' }),
   role: z.string().min(2, { message: 'Role must be at least 2 characters.' }),
   experienceLevel: z.string({ required_error: 'Please select an experience level.' }),
   specialty: z.string({ required_error: 'Please select a specialty.' }),
@@ -44,6 +45,7 @@ function PreInterviewForm() {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      name: '',
       role: '',
       topic: '',
       targetCompany: '',
@@ -60,6 +62,22 @@ function PreInterviewForm() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>What should we call you?</FormLabel>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                  <FormControl>
+                    <Input placeholder="e.g., Alex Doe" {...field} className="pl-10" />
+                  </FormControl>
+                </div>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <FormField
             control={form.control}

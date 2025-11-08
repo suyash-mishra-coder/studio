@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { useParams } from 'next/navigation';
-import { ThumbsUp, ThumbsDown, Sparkles, Star, Loader, BookOpen, Clock, Bot } from 'lucide-react';
+import { ThumbsUp, ThumbsDown, Sparkles, Star, Loader, BookOpen, Clock, Bot, User } from 'lucide-react';
 import { format } from 'date-fns';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -108,7 +108,7 @@ export default function FeedbackPage() {
   return (
     <div className="container mx-auto max-w-5xl py-8 px-4">
       <header className="mb-8 animate-fade-in-up">
-        <h1 className="font-headline text-4xl font-bold text-primary">Interview Feedback</h1>
+        <h1 className="font-headline text-4xl font-bold text-primary">Interview Feedback for {session.name || 'you'}</h1>
         <div className="flex items-center gap-4 mt-2 text-muted-foreground">
           <Badge variant="secondary">{session.role}</Badge>
           <Separator orientation="vertical" className="h-4"/>
@@ -194,7 +194,7 @@ export default function FeedbackPage() {
                   {item.type === 'answer' && (
                     <Avatar className="h-8 w-8">
                       <AvatarImage src="https://picsum.photos/seed/user-avatar/40/40" />
-                      <AvatarFallback>U</AvatarFallback>
+                      <AvatarFallback>{(session.name || 'U').charAt(0)}</AvatarFallback>
                     </Avatar>
                   )}
                 </div>

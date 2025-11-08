@@ -56,22 +56,31 @@ export default function InterviewPage() {
   const [isFinishing, setIsFinishing] = React.useState(false);
   const [isMicOn, setMicOn] = React.useState(true);
   const aiAvatar = PlaceHolderImages.find(p => p.id === 'ai-avatar');
+  const userName = searchParams.get('name') || "User";
 
   const interviewConfig = React.useMemo(() => {
-    return {
+    const config: Record<string, string> = {
       role: searchParams.get('role') || "Software Engineer",
       experienceLevel: searchParams.get('experienceLevel') || "Mid-level",
       specialty: searchParams.get('specialty') || "Data Structures and Algorithms",
       topic: searchParams.get('topic') || "Arrays and Hashing",
-      targetCompany: searchParams.get('targetCompany') || undefined,
     };
+    const targetCompany = searchParams.get('targetCompany');
+    if (targetCompany) {
+      config.targetCompany = targetCompany;
+    }
+    const name = searchParams.get('name');
+    if (name) {
+      config.name = name;
+    }
+    return config;
   }, [searchParams]);
 
 
   React.useEffect(() => {
     async function fetchQuestions() {
       try {
-        const response = await getInterviewQuestions(interviewConfig);
+        const response = await getInterviewQuestions(interviewConfig as any);
         setQuestions(response.questions);
       } catch (error) {
         toast({
@@ -112,7 +121,7 @@ export default function InterviewPage() {
       if (!configToSave.targetCompany) {
         delete configToSave.targetCompany;
       }
-      const sessionId = await saveSession(configToSave, finalTranscript);
+      const sessionId = await saveSession(configToSave as any, finalTranscript);
       
       toast({
         title: "Interview Complete!",

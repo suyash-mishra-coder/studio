@@ -6,6 +6,7 @@ export type InterviewTranscriptItem = {
 
 export interface InterviewSession {
   id: string;
+  name?: string;
   role: string;
   specialty: string;
   date: string; // ISO 8601 format
