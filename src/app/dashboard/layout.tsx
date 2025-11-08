@@ -90,12 +90,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </SidebarMenu>
         </SidebarFooter>
       </Sidebar>
-      <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
+      <div className="flex flex-col flex-1 sm:pl-14">
         <Header />
-        <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
+        <main className="flex-1 p-4 sm:px-6 sm:py-4 md:gap-8">
             {children}
         </main>
-        <footer className="mt-auto p-4 text-center text-xs text-muted-foreground sm:px-6">
+        <footer className="p-4 text-center text-xs text-muted-foreground sm:px-6">
             © 2024 Mockview AI. All Rights Reserved. Developed by Suyash Mishra.
         </footer>
       </div>
