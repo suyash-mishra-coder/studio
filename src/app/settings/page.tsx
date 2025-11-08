@@ -41,7 +41,7 @@ function SettingsSection({ title, description, icon: Icon, children, delay = 0 }
 
 export default function SettingsPage() {
     const userAvatar = PlaceHolderImages.find(p => p.id === 'user-avatar');
-    const [name, setName] = React.useState("Alex Doe");
+    const [name, setName] = React.useState("Suyash Mishra");
     const [avatar, setAvatar] = React.useState(userAvatar?.imageUrl);
     const { toast } = useToast();
 

@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -21,7 +22,7 @@ const navLinks = [
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const userAvatar = PlaceHolderImages.find(p => p.id === 'user-avatar');
-  const userName = "Alex Doe";
+  const userName = "Suyash Mishra";
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-muted/40">
@@ -64,7 +65,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     <div className="flex flex-col overflow-hidden group-data-[collapsible=icon]:hidden">
                         <p className="text-sm font-medium leading-none truncate">{userName}</p>
                         <p className="text-xs leading-none text-muted-foreground truncate">
-                            alex.doe@example.com
+                            suyash.mishra@example.com
                         </p>
                     </div>
                 </div>
@@ -94,6 +95,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
             {children}
         </main>
+        <footer className="mt-auto p-4 text-center text-xs text-muted-foreground sm:px-6">
+            © 2024 Mockview AI. All Rights Reserved. Developed by Suyash Mishra.
+        </footer>
       </div>
     </div>
   );

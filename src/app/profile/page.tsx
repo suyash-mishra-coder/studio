@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -15,7 +16,7 @@ export default function UserProfilePage() {
   const [loading, setLoading] = React.useState(true);
 
   const userAvatar = PlaceHolderImages.find(p => p.id === 'user-avatar');
-  const userName = "Alex Doe"; // In a real app, this would come from auth state
+  const userName = "Suyash Mishra"; // In a real app, this would come from auth state
 
   React.useEffect(() => {
     async function loadData() {
