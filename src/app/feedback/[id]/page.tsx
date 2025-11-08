@@ -4,6 +4,7 @@ import * as React from 'react';
 import { useParams } from 'next/navigation';
 import { ThumbsUp, ThumbsDown, Sparkles, Star, Loader, BookOpen, Clock, Bot, User } from 'lucide-react';
 import { format } from 'date-fns';
+import { motion } from 'framer-motion';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { getPersonalizedFeedback } from '@/app/actions';
@@ -69,37 +70,56 @@ export default function FeedbackPage() {
   const [feedback, setFeedback] = React.useState<InterviewFeedback | null>(null);
   const [session, setSession] = React.useState<InterviewSession | null>(null);
   const [loading, setLoading] = React.useState(true);
+  const [generatingFeedback, setGeneratingFeedback] = React.useState(false);
 
   const aiAvatar = PlaceHolderImages.find(p => p.id === 'ai-avatar');
   const userAvatar = PlaceHolderImages.find(p => p.id === 'user-avatar');
 
   React.useEffect(() => {
-    async function loadFeedback() {
+    async function loadData() {
       if (!sessionId) return;
+      setLoading(true);
       
       const sessionData = await getSession(sessionId);
       const feedbackData = await getFeedback(sessionId);
 
       if (feedbackData && sessionData) {
-        // Mock calling the GenAI flow with the transcript from mock data
-        const aiFeedback = await getPersonalizedFeedback({
-          interviewTranscript: feedbackData.transcript.map(t => `${t.type === 'question' ? 'Q:' : 'A:'} ${t.content}`).join('\n'),
-          userRole: sessionData.role,
-          experienceLevel: "Mid-level", // Mocked for now
-          technicalSpecialty: sessionData.specialty,
-          targetCompany: "Google" // Mocked
-        });
-        
         setSession(sessionData);
-        setFeedback({...feedbackData, ...aiFeedback});
+        // If feedback is not generated yet, call the AI
+        if (!feedbackData.strengths && feedbackData.transcript.length > 0) {
+          setGeneratingFeedback(true);
+          const aiFeedback = await getPersonalizedFeedback({
+            interviewTranscript: feedbackData.transcript.map(t => `${t.type === 'question' ? 'Q:' : 'A:'} ${t.content}`).join('\n'),
+            userRole: sessionData.role,
+            experienceLevel: "Mid-level", // This can be dynamic in a real app
+            technicalSpecialty: sessionData.specialty,
+            targetCompany: "A top tech company" // This can be dynamic
+          });
+          setFeedback({...feedbackData, ...aiFeedback});
+          setGeneratingFeedback(false);
+        } else {
+          setFeedback(feedbackData);
+        }
       }
       setLoading(false);
     }
-    loadFeedback();
+    loadData();
   }, [sessionId]);
 
   if (loading) {
     return <div className="flex h-screen items-center justify-center"><Loader className="h-12 w-12 animate-spin text-primary" /></div>;
+  }
+  
+  if (generatingFeedback) {
+    return (
+        <div className="flex h-screen items-center justify-center">
+            <div className="flex flex-col items-center gap-4 text-center">
+                <Loader className="h-12 w-12 animate-spin text-primary" />
+                <h2 className="text-2xl font-semibold">Generating Your Feedback...</h2>
+                <p className="text-muted-foreground max-w-md">Our AI is analyzing your performance to provide you with detailed, personalized insights. This might take a moment.</p>
+            </div>
+        </div>
+    );
   }
 
   if (!feedback || !session) {
@@ -118,59 +138,67 @@ export default function FeedbackPage() {
       </header>
       
       <div className="grid md:grid-cols-3 gap-8">
-        <Card className="md:col-span-1 flex flex-col items-center justify-center text-center p-6 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
-          <CardHeader>
-            <CardTitle>Overall Score</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ScoreCircle score={feedback.score} />
-          </CardContent>
-        </Card>
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.1 }}>
+            <Card className="md:col-span-1 flex flex-col items-center justify-center text-center p-6">
+                <CardHeader>
+                    <CardTitle>Overall Score</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <ScoreCircle score={feedback.score} />
+                </CardContent>
+            </Card>
+        </motion.div>
 
         <div className="md:col-span-2 space-y-8">
-          <Card className="animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-            <CardHeader>
-              <div className="flex items-center gap-3">
-                <ThumbsUp className="h-6 w-6 text-green-500" />
-                <CardTitle className="text-green-500">Strengths</CardTitle>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground">{feedback.strengths}</p>
-            </CardContent>
-          </Card>
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.2 }}>
+            <Card>
+                <CardHeader>
+                <div className="flex items-center gap-3">
+                    <ThumbsUp className="h-6 w-6 text-green-500" />
+                    <CardTitle className="text-green-500">Strengths</CardTitle>
+                </div>
+                </CardHeader>
+                <CardContent>
+                <p className="text-muted-foreground whitespace-pre-wrap">{feedback.strengths}</p>
+                </CardContent>
+            </Card>
+          </motion.div>
 
-          <Card className="animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
-            <CardHeader>
-              <div className="flex items-center gap-3">
-                <ThumbsDown className="h-6 w-6 text-destructive" />
-                <CardTitle className="text-destructive">Areas for Improvement</CardTitle>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground">{feedback.weaknesses}</p>
-            </CardContent>
-          </Card>
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.3 }}>
+            <Card>
+                <CardHeader>
+                <div className="flex items-center gap-3">
+                    <ThumbsDown className="h-6 w-6 text-destructive" />
+                    <CardTitle className="text-destructive">Areas for Improvement</CardTitle>
+                </div>
+                </CardHeader>
+                <CardContent>
+                <p className="text-muted-foreground whitespace-pre-wrap">{feedback.weaknesses}</p>
+                </CardContent>
+            </Card>
+          </motion.div>
 
-          <Card className="animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
-            <CardHeader>
-              <div className="flex items-center gap-3">
-                <Sparkles className="h-6 w-6 text-primary" />
-                <CardTitle className="text-primary">Personalized Tips</CardTitle>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <ul className="list-disc pl-5 space-y-2 text-muted-foreground">
-                {feedback.improvementTips.split(/\d+\./).filter(tip => tip.trim() !== '').map((tip, index) => (
-                    <li key={index}>{tip.trim()}</li>
-                ))}
-              </ul>
-            </CardContent>
-          </Card>
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.4 }}>
+            <Card>
+                <CardHeader>
+                <div className="flex items-center gap-3">
+                    <Sparkles className="h-6 w-6 text-primary" />
+                    <CardTitle className="text-primary">Personalized Tips</CardTitle>
+                </div>
+                </CardHeader>
+                <CardContent>
+                <ul className="list-disc pl-5 space-y-2 text-muted-foreground">
+                    {feedback.improvementTips.split(/\d+\./).filter(tip => tip.trim() !== '').map((tip, index) => (
+                        <li key={index}>{tip.trim()}</li>
+                    ))}
+                </ul>
+                </CardContent>
+            </Card>
+          </motion.div>
         </div>
       </div>
       
-      <div className="mt-12 animate-fade-in-up" style={{ animationDelay: '0.5s' }}>
+      <motion.div className="mt-12" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.5 }}>
         <Card>
           <CardHeader>
             <div className="flex items-center gap-3">
@@ -203,7 +231,7 @@ export default function FeedbackPage() {
             </div>
           </CardContent>
         </Card>
-      </div>
+      </motion.div>
     </div>
   );
 }

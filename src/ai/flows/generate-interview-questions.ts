@@ -23,7 +23,15 @@ const interviewQuestionsPrompt = ai.definePrompt({
   name: 'interviewQuestionsPrompt',
   input: { schema: GenerateInterviewQuestionsInputSchema },
   output: { schema: GenerateInterviewQuestionsOutputSchema },
-  prompt: `Generate 5 interview questions for a {{experienceLevel}} {{role}} specializing in {{specialty}} on the topic of {{topic}}{{#if targetCompany}} targeting a position at {{targetCompany}}{{/if}}.`,
+  prompt: `Generate 5 specific and detailed interview questions for a {{experienceLevel}} {{role}} specializing in {{specialty}} on the topic of {{topic}}{{#if targetCompany}} targeting a position at {{targetCompany}}{{/if}}.
+
+The questions should cover a range of complexities and include:
+1. One foundational conceptual question.
+2. Two practical, problem-solving or coding-related questions.
+3. One behavioral question related to the specialty and topic.
+4. One system design or architectural question appropriate for the experience level.
+
+Ensure the questions are distinct and require in-depth answers.`,
 });
 
 export const generateInterviewQuestionsFlow = ai.defineFlow(

@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Bot, LayoutDashboard, Plus, User, Settings } from 'lucide-react';
+import { BookOpen, LayoutDashboard, Plus, User, Settings } from 'lucide-react';
 import { Logo } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -18,6 +18,7 @@ import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 const navLinks = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { href: '/learn', label: 'Learning Hub', icon: BookOpen },
   { href: '/profile', label: 'Profile', icon: User },
 ];
 
