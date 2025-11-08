@@ -1,8 +1,8 @@
 'use client';
 
 import * as React from 'react';
-import { useRouter } from 'next/navigation';
-import { AlertTriangle, Bot, Clapperboard, Code2, Loader, Mic, MicOff, Send, CheckCircle, Timer } from 'lucide-react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Bot, Code2, Loader, Mic, MicOff, Send, CheckCircle, Timer } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -10,7 +10,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { Progress } from '@/components/ui/progress';
 import { getInterviewQuestions } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import type { InterviewTranscriptItem } from '@/lib/types';
 import { saveSession } from '@/lib/data';
@@ -47,6 +46,7 @@ function InterviewTimer({ onFinish }: { onFinish: () => void }) {
 
 export default function InterviewPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { toast } = useToast();
   const [questions, setQuestions] = React.useState<string[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = React.useState(0);
@@ -58,15 +58,14 @@ export default function InterviewPage() {
   const aiAvatar = PlaceHolderImages.find(p => p.id === 'ai-avatar');
 
   const interviewConfig = React.useMemo(() => {
-    // In a real app, this would come from the form submission or URL
     return {
-      role: "Software Engineer",
-      experienceLevel: "Mid-level",
-      specialty: "Data Structures and Algorithms",
-      topic: "Arrays and Hashing",
-      targetCompany: "Google",
+      role: searchParams.get('role') || "Software Engineer",
+      experienceLevel: searchParams.get('experienceLevel') || "Mid-level",
+      specialty: searchParams.get('specialty') || "Data Structures and Algorithms",
+      topic: searchParams.get('topic') || "Arrays and Hashing",
+      targetCompany: searchParams.get('targetCompany') || undefined,
     };
-  }, []);
+  }, [searchParams]);
 
 
   React.useEffect(() => {
@@ -92,23 +91,28 @@ export default function InterviewPage() {
     fetchQuestions();
   }, [toast, interviewConfig]);
 
-  const finishInterview = React.useCallback(async (currentAnswer?: string) => {
+  const finishInterview = React.useCallback(async (finalAnswer?: string) => {
     if (isFinishing) return;
     setIsFinishing(true);
     
+    // Ensure the final answer is included in the transcript
+    const answerToSave = finalAnswer !== undefined ? finalAnswer : userAnswer;
+
     const finalTranscript = [
       ...transcript,
-      { type: 'question', content: questions[currentQuestionIndex], timestamp: Date.now() },
-      { type: 'answer', content: currentAnswer || userAnswer, timestamp: Date.now() }
+      { type: 'question' as const, content: questions[currentQuestionIndex], timestamp: Date.now() },
+      { type: 'answer' as const, content: answerToSave, timestamp: Date.now() }
     ].filter(item => item?.content?.trim() !== '');
 
     console.log("Interview Finished. Transcript:", finalTranscript);
     
     try {
-      const sessionId = await saveSession(
-        { ...interviewConfig, date: new Date().toISOString() },
-        finalTranscript
-      );
+      const configToSave = { ...interviewConfig, date: new Date().toISOString() };
+      // The targetCompany might be an empty string from the form, which we should treat as undefined
+      if (!configToSave.targetCompany) {
+        delete configToSave.targetCompany;
+      }
+      const sessionId = await saveSession(configToSave, finalTranscript);
       
       toast({
         title: "Interview Complete!",
@@ -140,19 +144,18 @@ export default function InterviewPage() {
       });
       return;
     }
-    const newTranscript: InterviewTranscriptItem[] = [
-      ...transcript,
-      { type: 'question', content: questions[currentQuestionIndex], timestamp: Date.now() },
-      { type: 'answer', content: currentAnswer, timestamp: Date.now() }
-    ];
-    
-    setTranscript(newTranscript);
-    setUserAnswer('');
 
-    if (currentQuestionIndex < questions.length - 1) {
-      setCurrentQuestionIndex(prev => prev + 1);
-    } else {
+    if (currentQuestionIndex >= questions.length - 1) {
       finishInterview(currentAnswer);
+    } else {
+      const newTranscript: InterviewTranscriptItem[] = [
+        ...transcript,
+        { type: 'question', content: questions[currentQuestionIndex], timestamp: Date.now() },
+        { type: 'answer', content: currentAnswer, timestamp: Date.now() }
+      ];
+      setTranscript(newTranscript);
+      setUserAnswer('');
+      setCurrentQuestionIndex(prev => prev + 1);
     }
   };
   
@@ -180,7 +183,7 @@ export default function InterviewPage() {
       </header>
 
       <div className="flex-1 flex flex-col gap-4 overflow-y-auto">
-        <Card className="flex-shrink-0 shadow-lg animate-fade-in-up">
+        <Card className="flex-shrink-0 shadow-lg animate-fade-in-up bg-card/50">
           <CardContent className="p-6">
             <div className="flex items-start gap-4">
               <Avatar>
@@ -202,7 +205,7 @@ export default function InterviewPage() {
             placeholder="Your answer or code here... You can talk to the AI, but for now, your response must be written."
             value={userAnswer}
             onChange={(e) => setUserAnswer(e.target.value)}
-            className="flex-1 font-mono text-sm shadow-inner"
+            className="flex-1 font-mono text-sm shadow-inner bg-background/80"
           />
         </div>
 
@@ -220,7 +223,7 @@ export default function InterviewPage() {
                  </Button>
                  <p className="text-sm text-muted-foreground">Mic is {isMicOn ? 'on' : 'off'}</p>
               </div>
-              <Button size="lg" onClick={handleNextQuestion} className="w-1/2">
+              <Button size="lg" onClick={handleNextQuestion} className="w-1/2 transition-transform hover:scale-[1.02] active:scale-[0.98]">
                 {currentQuestionIndex < questions.length - 1 ? (
                   <>
                     <Send className="mr-2 h-4 w-4" />

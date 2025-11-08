@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
-import { Bot, Briefcase, Code, GraduationCap, Building } from 'lucide-react';
+import { Bot, Briefcase, Code, GraduationCap, Building, User } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -55,7 +55,8 @@ function PreInterviewForm() {
     // In a real app, we'd pass these values to the interview page.
     // For this MVP, we'll just start a generic interview.
     console.log(values);
-    router.push('/interview/new-interview-123');
+    const params = new URLSearchParams(values as Record<string, string>).toString();
+    router.push(`/interview/new-interview-123?${params}`);
   }
 
   return (
@@ -170,7 +171,7 @@ function PreInterviewForm() {
           />
         </div>
 
-        <Button type="submit" size="lg" className="w-full transition-transform hover:scale-105" disabled={formState.isSubmitting}>
+        <Button type="submit" size="lg" className="w-full transition-transform hover:scale-[1.02] active:scale-[0.98]" disabled={formState.isSubmitting}>
           {formState.isSubmitting ? 'Starting...' : 'Start Your Mock Interview'}
         </Button>
       </form>
@@ -179,12 +180,25 @@ function PreInterviewForm() {
 }
 
 export default function Home() {
+  const [userName, setUserName] = React.useState('Guest');
+
+  // In a real app, you would fetch the user's name from an auth provider.
+  // For now, we'll just use a placeholder.
+  React.useEffect(() => {
+    // This is just a mock, in a real scenario this would be an API call
+    const user = { name: 'Alex' };
+    if (user.name) {
+      setUserName(user.name);
+    }
+  }, []);
+
   return (
     <div className="flex flex-col items-center justify-center min-h-full p-4 md:p-8">
       <div className="w-full max-w-4xl">
         <header className="text-center mb-10 animate-fade-in-up">
-          <div className="inline-block bg-primary/10 p-4 rounded-lg mb-4">
-            <Logo className="h-12 w-12 text-primary" />
+           <div className="inline-flex items-center gap-3 bg-card border border-border/50 rounded-full px-4 py-2 mb-6">
+            <User className="h-5 w-5 text-primary"/>
+            <span className="text-sm font-medium text-muted-foreground">Welcome back, {userName}!</span>
           </div>
           <h1 className="font-headline text-4xl md:text-5xl font-bold text-primary">
             Mockview AI
@@ -194,7 +208,7 @@ export default function Home() {
           </p>
         </header>
 
-        <Card className="shadow-2xl animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+        <Card className="shadow-2xl animate-fade-in-up bg-card/50 backdrop-blur-sm" style={{ animationDelay: '0.2s' }}>
           <CardHeader>
             <CardTitle className="text-2xl font-headline">Prepare Your Interview</CardTitle>
             <CardDescription>
