@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
-import { Bot, Briefcase, Code, GraduationCap, Building, User } from 'lucide-react';
+import { Briefcase, Code, GraduationCap, Building, User } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 import { Button } from '@/components/ui/button';
@@ -67,13 +67,10 @@ function PreInterviewForm() {
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>What should we call you?</FormLabel>
-                <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                  <FormControl>
-                    <Input placeholder="e.g., Alex Doe" {...field} className="pl-10" />
-                  </FormControl>
-                </div>
+                <FormLabel>Name</FormLabel>
+                <FormControl>
+                  <Input placeholder="Alex Doe" {...field} />
+                </FormControl>
                 <FormMessage />
               </FormItem>
             )}
@@ -85,12 +82,9 @@ function PreInterviewForm() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Your Role</FormLabel>
-                <div className="relative">
-                  <Briefcase className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                  <FormControl>
-                    <Input placeholder="e.g., Software Engineer" {...field} className="pl-10" />
-                  </FormControl>
-                </div>
+                <FormControl>
+                  <Input placeholder="e.g., Software Engineer" {...field} />
+                </FormControl>
                 <FormMessage />
               </FormItem>
             )}
@@ -103,12 +97,9 @@ function PreInterviewForm() {
                 <FormLabel>Experience Level</FormLabel>
                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                   <FormControl>
-                    <div className="relative">
-                      <GraduationCap className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                      <SelectTrigger className="pl-10">
-                        <SelectValue placeholder="Select your experience" />
-                      </SelectTrigger>
-                    </div>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select your experience" />
+                    </SelectTrigger>
                   </FormControl>
                   <SelectContent>
                     {EXPERIENCE_LEVELS.map((level) => (
@@ -132,12 +123,9 @@ function PreInterviewForm() {
               <FormLabel>Technical Specialty</FormLabel>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
-                  <div className="relative">
-                    <Code className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                    <SelectTrigger className="pl-10">
-                      <SelectValue placeholder="Select your specialty" />
-                    </SelectTrigger>
-                  </div>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select your specialty" />
+                  </SelectTrigger>
                 </FormControl>
                 <SelectContent>
                   {SPECIALTIES.map((specialty) => (
@@ -159,12 +147,9 @@ function PreInterviewForm() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Interview Topic</FormLabel>
-                <div className="relative">
-                   <Bot className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                  <FormControl>
-                    <Input placeholder="e.g., Data Structures" {...field} className="pl-10"/>
-                  </FormControl>
-                </div>
+                <FormControl>
+                  <Input placeholder="e.g., Data Structures" {...field} />
+                </FormControl>
                 <FormMessage />
               </FormItem>
             )}
@@ -175,19 +160,16 @@ function PreInterviewForm() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Target Company (Optional)</FormLabel>
-                 <div className="relative">
-                   <Building className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                  <FormControl>
-                    <Input placeholder="e.g., Google" {...field} className="pl-10"/>
-                  </FormControl>
-                </div>
+                <FormControl>
+                  <Input placeholder="e.g., Google" {...field} />
+                </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
         </div>
 
-        <Button type="submit" size="lg" className="w-full transition-transform hover:scale-[1.02] active:scale-[0.98]" disabled={formState.isSubmitting}>
+        <Button type="submit" size="lg" className="w-full" disabled={formState.isSubmitting}>
           {formState.isSubmitting ? 'Starting...' : 'Start Your Mock Interview'}
         </Button>
       </form>
@@ -199,11 +181,11 @@ export default function Home() {
   const [showForm, setShowForm] = React.useState(false);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-full p-4 md:p-8">
+    <div className="flex flex-col items-center justify-center min-h-full p-4 md:p-8 bg-gray-50">
       <div className="w-full max-w-4xl">
         <header className="text-center mb-10 animate-fade-in-up">
           <motion.h1 
-            className="font-headline text-4xl md:text-5xl font-bold text-primary"
+            className="font-headline text-4xl md:text-5xl font-bold text-gray-800"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
@@ -230,7 +212,7 @@ export default function Home() {
               transition={{ duration: 0.3 }}
               className="text-center"
             >
-              <Button size="lg" className="transition-transform hover:scale-[1.02] active:scale-[0.98] bg-accent hover:bg-accent/90 text-accent-foreground text-lg px-8 py-6" onClick={() => setShowForm(true)}>
+              <Button size="lg" className="text-lg px-8 py-6" onClick={() => setShowForm(true)}>
                 Get Started
               </Button>
             </motion.div>
@@ -241,7 +223,7 @@ export default function Home() {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               transition={{ duration: 0.4, ease: 'easeOut' }}
             >
-              <Card className="shadow-2xl bg-card/50 backdrop-blur-sm border-primary/20">
+              <Card>
                 <CardHeader>
                   <CardTitle className="text-2xl font-headline">Prepare Your Interview</CardTitle>
                   <CardDescription>

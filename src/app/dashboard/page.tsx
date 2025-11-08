@@ -33,7 +33,7 @@ import type { InterviewSession } from '@/lib/types';
 const chartConfig = {
   score: {
     label: 'Score',
-    color: 'hsl(var(--accent))',
+    color: 'hsl(var(--primary))',
   },
 } satisfies ChartConfig;
 
@@ -59,20 +59,20 @@ export default function DashboardPage() {
 
   return (
     <div className="container mx-auto py-8 px-4">
-      <h1 className="font-headline text-3xl font-bold mb-8 text-primary animate-fade-in-up">Your Dashboard</h1>
+      <h1 className="text-3xl font-bold mb-8 text-foreground animate-fade-in-up">Your Dashboard</h1>
 
       <div className="grid gap-8">
-        <Card className="shadow-lg animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
+        <Card className="animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
           <CardHeader>
             <div className="flex items-center gap-3">
               <BarChart className="h-6 w-6 text-primary" />
-              <CardTitle className="font-headline">Performance Trend</CardTitle>
+              <CardTitle>Performance Trend</CardTitle>
             </div>
             <CardDescription>Your mock interview scores over time.</CardDescription>
           </CardHeader>
           <CardContent>
             {loading ? (
-              <div className="h-[250px] w-full bg-muted/50 animate-pulse rounded-md" />
+              <div className="h-[250px] w-full bg-muted animate-pulse rounded-md" />
             ) : sessions.length > 0 ? (
               <ChartContainer config={chartConfig} className="h-[250px] w-full">
                 <BarChart accessibilityLayer data={chartData}>
@@ -89,7 +89,7 @@ export default function DashboardPage() {
                     content={<ChartTooltipContent indicator="dot" />}
                   />
                   <ChartLegend content={<ChartLegendContent />} />
-                  <ChartBar dataKey="score" radius={8} />
+                  <ChartBar dataKey="score" radius={4} />
                 </BarChart>
               </ChartContainer>
             ) : (
@@ -100,11 +100,11 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card className="shadow-lg animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+        <Card className="animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
           <CardHeader>
             <div className="flex items-center gap-3">
               <History className="h-6 w-6 text-primary" />
-              <CardTitle className="font-headline">Session History</CardTitle>
+              <CardTitle>Session History</CardTitle>
             </div>
             <CardDescription>Review your past mock interviews and feedback.</CardDescription>
           </CardHeader>
@@ -123,11 +123,11 @@ export default function DashboardPage() {
                 {loading ? (
                   Array.from({ length: 3 }).map((_, i) => (
                     <TableRow key={i}>
-                      <TableCell><div className="h-4 bg-muted/50 animate-pulse rounded w-24"></div></TableCell>
-                      <TableCell><div className="h-4 bg-muted/50 animate-pulse rounded w-32"></div></TableCell>
-                      <TableCell className="hidden md:table-cell"><div className="h-4 bg-muted/50 animate-pulse rounded w-20"></div></TableCell>
-                      <TableCell className="text-right"><div className="h-4 bg-muted/50 animate-pulse rounded w-8 ml-auto"></div></TableCell>
-                      <TableCell><div className="h-8 w-8 bg-muted/50 animate-pulse rounded-full ml-auto"></div></TableCell>
+                      <TableCell><div className="h-4 bg-muted animate-pulse rounded w-24"></div></TableCell>
+                      <TableCell><div className="h-4 bg-muted animate-pulse rounded w-32"></div></TableCell>
+                      <TableCell className="hidden md:table-cell"><div className="h-4 bg-muted animate-pulse rounded w-20"></div></TableCell>
+                      <TableCell className="text-right"><div className="h-4 bg-muted animate-pulse rounded w-8 ml-auto"></div></TableCell>
+                      <TableCell><div className="h-8 w-8 bg-muted animate-pulse rounded-full ml-auto"></div></TableCell>
                     </TableRow>
                   ))
                 ) : sessions.length > 0 ? (
@@ -139,12 +139,12 @@ export default function DashboardPage() {
                         <Badge variant="secondary">{session.specialty}</Badge>
                       </TableCell>
                       <TableCell className="text-right">
-                        <Badge variant={session.score && session.score >= 7 ? 'default' : 'destructive'} className="bg-accent text-accent-foreground">
+                        <Badge variant={session.score && session.score >= 7 ? 'default' : 'destructive'}>
                           {session.score}/10
                         </Badge>
                       </TableCell>
                       <TableCell className="text-right">
-                        <Button variant="ghost" size="icon" asChild className="transition-transform hover:scale-110">
+                        <Button variant="ghost" size="icon" asChild>
                           <Link href={`/feedback/${session.id}`}>
                             <ChevronRight className="h-4 w-4" />
                           </Link>

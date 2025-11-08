@@ -25,7 +25,7 @@ function ScoreCircle({ score }: { score: number }) {
   }, [score, circumference]);
 
 
-  let colorClass = 'text-accent';
+  let colorClass = 'text-primary';
   if (score < 7) colorClass = 'text-yellow-500';
   if (score < 4) colorClass = 'text-destructive';
 
@@ -109,7 +109,7 @@ export default function FeedbackPage() {
   return (
     <div className="container mx-auto max-w-5xl py-8 px-4">
       <header className="mb-8 animate-fade-in-up">
-        <h1 className="font-headline text-4xl font-bold text-primary">Interview Feedback for {session.name || 'you'}</h1>
+        <h1 className="font-headline text-4xl font-bold text-foreground">Interview Feedback for {session.name || 'you'}</h1>
         <div className="flex items-center gap-4 mt-2 text-muted-foreground">
           <Badge variant="secondary">{session.role}</Badge>
           <Separator orientation="vertical" className="h-4"/>
@@ -118,9 +118,9 @@ export default function FeedbackPage() {
       </header>
       
       <div className="grid md:grid-cols-3 gap-8">
-        <Card className="md:col-span-1 flex flex-col items-center justify-center text-center p-6 shadow-lg animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
+        <Card className="md:col-span-1 flex flex-col items-center justify-center text-center p-6 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
           <CardHeader>
-            <CardTitle className="font-headline">Overall Score</CardTitle>
+            <CardTitle>Overall Score</CardTitle>
           </CardHeader>
           <CardContent>
             <ScoreCircle score={feedback.score} />
@@ -128,11 +128,11 @@ export default function FeedbackPage() {
         </Card>
 
         <div className="md:col-span-2 space-y-8">
-          <Card className="shadow-lg animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+          <Card className="animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
             <CardHeader>
               <div className="flex items-center gap-3">
-                <ThumbsUp className="h-6 w-6 text-accent" />
-                <CardTitle className="font-headline text-accent">Strengths</CardTitle>
+                <ThumbsUp className="h-6 w-6 text-green-500" />
+                <CardTitle className="text-green-500">Strengths</CardTitle>
               </div>
             </CardHeader>
             <CardContent>
@@ -140,11 +140,11 @@ export default function FeedbackPage() {
             </CardContent>
           </Card>
 
-          <Card className="shadow-lg animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
+          <Card className="animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
             <CardHeader>
               <div className="flex items-center gap-3">
                 <ThumbsDown className="h-6 w-6 text-destructive" />
-                <CardTitle className="font-headline text-destructive">Areas for Improvement</CardTitle>
+                <CardTitle className="text-destructive">Areas for Improvement</CardTitle>
               </div>
             </CardHeader>
             <CardContent>
@@ -152,11 +152,11 @@ export default function FeedbackPage() {
             </CardContent>
           </Card>
 
-          <Card className="shadow-lg animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
+          <Card className="animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
             <CardHeader>
               <div className="flex items-center gap-3">
                 <Sparkles className="h-6 w-6 text-primary" />
-                <CardTitle className="font-headline text-primary">Personalized Tips</CardTitle>
+                <CardTitle className="text-primary">Personalized Tips</CardTitle>
               </div>
             </CardHeader>
             <CardContent>
@@ -171,16 +171,16 @@ export default function FeedbackPage() {
       </div>
       
       <div className="mt-12 animate-fade-in-up" style={{ animationDelay: '0.5s' }}>
-        <Card className="shadow-lg">
+        <Card>
           <CardHeader>
             <div className="flex items-center gap-3">
               <BookOpen className="h-6 w-6 text-primary" />
-              <CardTitle className="font-headline">Interview Transcript</CardTitle>
+              <CardTitle>Interview Transcript</CardTitle>
             </div>
             <CardDescription>Review the full conversation from your interview.</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-6 max-h-96 overflow-y-auto p-4 border rounded-md bg-muted/20">
+            <div className="space-y-6 max-h-96 overflow-y-auto p-4 border rounded-md bg-muted/50">
               {feedback.transcript.map((item, index) => (
                 <div key={index} className={`flex gap-3 ${item.type === 'answer' ? 'justify-end' : 'justify-start'}`}>
                   {item.type === 'question' && (
@@ -189,7 +189,7 @@ export default function FeedbackPage() {
                       <AvatarFallback><Bot size={16} /></AvatarFallback>
                     </Avatar>
                   )}
-                  <div className={`max-w-xl p-3 rounded-lg ${item.type === 'question' ? 'bg-primary/10' : 'bg-accent/20'}`}>
+                  <div className={`max-w-xl p-3 rounded-lg ${item.type === 'question' ? 'bg-secondary' : 'bg-primary/10'}`}>
                     <p>{item.content}</p>
                   </div>
                   {item.type === 'answer' && (

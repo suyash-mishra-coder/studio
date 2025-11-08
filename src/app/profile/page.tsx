@@ -38,14 +38,14 @@ export default function UserProfilePage() {
   const uniqueSpecialties = [...new Set(sessions.map(s => s.specialty))];
 
   const SummaryCard = ({ icon: Icon, title, value, isLoading, suffix = '', color = 'text-primary' }: { icon: React.ElementType, title: string, value: string | number, isLoading: boolean, suffix?: string, color?: string }) => (
-    <Card className="shadow-md animate-fade-in-up bg-card/50 backdrop-blur-sm transition-all duration-300 hover:border-primary/50">
+    <Card className="animate-fade-in-up transition-all duration-300 hover:border-primary/50 hover:shadow-md">
       <CardHeader className="flex flex-row items-center justify-between pb-2">
         <CardTitle className="text-sm font-medium text-muted-foreground">{title}</CardTitle>
         <Icon className={`h-4 w-4 text-muted-foreground ${color}`} />
       </CardHeader>
       <CardContent>
         {isLoading ? (
-          <div className="h-8 bg-muted/50 animate-pulse rounded-md w-1/2"></div>
+          <div className="h-8 bg-muted animate-pulse rounded-md w-1/2"></div>
         ) : (
           <div className={`text-2xl font-bold ${color}`}>{value}{suffix}</div>
         )}
@@ -57,15 +57,12 @@ export default function UserProfilePage() {
     <div className="container mx-auto max-w-5xl py-12 px-4">
       <header className="mb-12 flex flex-col items-center text-center animate-fade-in-up">
         <div className="relative">
-          <Avatar className="h-28 w-28 mb-4 border-4 border-primary/50 shadow-lg">
+          <Avatar className="h-28 w-28 mb-4 border-4 border-white shadow-lg">
             <AvatarImage data-ai-hint={userAvatar?.imageHint} src={userAvatar?.imageUrl} />
             <AvatarFallback className="text-4xl">{userName.charAt(0)}</AvatarFallback>
           </Avatar>
-          <div className="absolute -bottom-1 -right-1 bg-primary p-2 rounded-full border-4 border-background">
-              <Zap className="h-5 w-5 text-primary-foreground"/>
-          </div>
         </div>
-        <h1 className="font-headline text-4xl font-bold text-primary mt-4">{userName}</h1>
+        <h1 className="font-headline text-4xl font-bold text-foreground mt-4">{userName}</h1>
         <p className="text-muted-foreground mt-2">Your journey to interview mastery starts here.</p>
       </header>
 
@@ -81,7 +78,7 @@ export default function UserProfilePage() {
             title="Average Score"
             value={averageScore.toFixed(1)}
             isLoading={loading}
-            color="text-accent"
+            color="text-blue-500"
          />
          <SummaryCard
             icon={Award}
@@ -89,23 +86,24 @@ export default function UserProfilePage() {
             value={bestScore}
             isLoading={loading}
             suffix="/10"
+            color="text-green-500"
          />
          <SummaryCard 
             icon={Star}
             title="Specialties"
             value={uniqueSpecialties.length}
             isLoading={loading}
-            color="text-yellow-400"
+            color="text-yellow-500"
          />
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-5 gap-8">
         <div className="md:col-span-3 space-y-8">
-          <Card className="shadow-lg animate-fade-in-up bg-card/50" style={{ animationDelay: '0.2s' }}>
+          <Card className="animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
             <CardHeader>
               <div className="flex items-center gap-3">
                 <TrendingUp className="h-6 w-6 text-primary" />
-                <CardTitle className="font-headline">Level Progress</CardTitle>
+                <CardTitle>Level Progress</CardTitle>
               </div>
               <CardDescription>Experience points to next level: Senior Engineer</CardDescription>
             </CardHeader>
@@ -120,20 +118,20 @@ export default function UserProfilePage() {
             </CardContent>
           </Card>
 
-          <Card className="shadow-lg animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
+          <Card className="animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
             <CardHeader>
               <div className="flex items-center gap-3">
                 <Star className="h-6 w-6 text-primary" />
-                <CardTitle className="font-headline">Practiced Specialties</CardTitle>
+                <CardTitle>Practiced Specialties</CardTitle>
               </div>
               <CardDescription>Topics you've recently practiced.</CardDescription>
             </CardHeader>
             <CardContent>
               {loading ? (
                 <div className="flex flex-wrap gap-2">
-                  <div className="h-6 w-24 bg-muted/50 animate-pulse rounded-full"></div>
-                  <div className="h-6 w-32 bg-muted/50 animate-pulse rounded-full"></div>
-                  <div className="h-6 w-28 bg-muted/50 animate-pulse rounded-full"></div>
+                  <div className="h-6 w-24 bg-muted animate-pulse rounded-full"></div>
+                  <div className="h-6 w-32 bg-muted animate-pulse rounded-full"></div>
+                  <div className="h-6 w-28 bg-muted animate-pulse rounded-full"></div>
                 </div>
               ) : (
                 <div className="flex flex-wrap gap-2">
@@ -148,9 +146,9 @@ export default function UserProfilePage() {
           </Card>
         </div>
         <div className="md:col-span-2">
-           <Card className="shadow-lg animate-fade-in-up bg-card/50" style={{ animationDelay: '0.4s' }}>
+           <Card className="animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
             <CardHeader>
-              <CardTitle className="font-headline">Achievements</CardTitle>
+              <CardTitle>Achievements</CardTitle>
               <CardDescription>Badges you've earned on your journey.</CardDescription>
             </CardHeader>
             <CardContent className="grid grid-cols-3 gap-4 text-center">
@@ -159,11 +157,11 @@ export default function UserProfilePage() {
                 <span className="text-xs">First Interview</span>
               </div>
               <div className="flex flex-col items-center gap-2 text-muted-foreground/50">
-                <div className="p-3 bg-muted/50 rounded-full"><Award size={24}/></div>
+                <div className="p-3 bg-muted rounded-full"><Award size={24}/></div>
                 <span className="text-xs">Perfect Score</span>
               </div>
               <div className="flex flex-col items-center gap-2 text-muted-foreground/50">
-                <div className="p-3 bg-muted/50 rounded-full"><TrendingUp size={24}/></div>
+                <div className="p-3 bg-muted rounded-full"><TrendingUp size={24}/></div>
                 <span className="text-xs">5-Day Streak</span>
               </div>
             </CardContent>

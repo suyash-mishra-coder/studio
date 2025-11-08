@@ -21,13 +21,13 @@ function SettingsSection({ title, description, icon: Icon, children, delay = 0 }
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay }}
         >
-            <Card className="bg-card/50 shadow-lg backdrop-blur-sm">
+            <Card>
                 <CardHeader className="flex flex-row items-start gap-4 space-y-0">
-                    <div className="p-3 bg-primary/10 rounded-full text-primary">
+                    <div className="p-3 bg-primary/10 rounded-lg text-primary">
                         <Icon className="h-5 w-5" />
                     </div>
                     <div>
-                        <CardTitle className="font-headline">{title}</CardTitle>
+                        <CardTitle>{title}</CardTitle>
                         <CardDescription>{description}</CardDescription>
                     </div>
                 </CardHeader>
@@ -63,7 +63,7 @@ export default function SettingsPage() {
     return (
         <div className="container mx-auto max-w-4xl py-12 px-4">
             <header className="mb-10 animate-fade-in-up">
-                <h1 className="font-headline text-4xl font-bold text-primary">Settings</h1>
+                <h1 className="font-headline text-4xl font-bold text-foreground">Settings</h1>
                 <p className="text-muted-foreground mt-2">Manage your account and preferences.</p>
             </header>
 
@@ -72,11 +72,11 @@ export default function SettingsPage() {
                     <div className="space-y-4">
                         <div className="flex items-center gap-6">
                             <div className="relative">
-                                <Avatar className="h-24 w-24 border-4 border-primary/20">
+                                <Avatar className="h-24 w-24 border">
                                     <AvatarImage data-ai-hint={userAvatar?.imageHint} src={avatar} />
                                     <AvatarFallback className="text-3xl">{name.charAt(0)}</AvatarFallback>
                                 </Avatar>
-                                <Button variant="ghost" size="icon" className="absolute bottom-0 right-0 bg-background/80 rounded-full h-8 w-8" onClick={handlePhotoChange}>
+                                <Button variant="outline" size="icon" className="absolute bottom-0 right-0 bg-background rounded-full h-8 w-8" onClick={handlePhotoChange}>
                                     <Upload className="h-4 w-4 text-primary" />
                                 </Button>
                             </div>
@@ -111,9 +111,9 @@ export default function SettingsPage() {
                      <div className="flex items-center justify-between rounded-lg border p-4">
                         <div>
                             <Label htmlFor="dark-mode">Dark Mode</Label>
-                            <p className="text-xs text-muted-foreground">The app is currently in dark mode.</p>
+                            <p className="text-xs text-muted-foreground">Toggle between light and dark themes.</p>
                         </div>
-                        <Switch id="dark-mode" checked disabled />
+                        <Switch id="dark-mode" onCheckedChange={() => document.documentElement.classList.toggle('dark')} />
                     </div>
                 </SettingsSection>
 
@@ -138,7 +138,7 @@ export default function SettingsPage() {
                 </SettingsSection>
                 
                 <div className="flex justify-end pt-4 animate-fade-in-up" style={{ animationDelay: '0.6s' }}>
-                    <Button size="lg" onClick={handleSaveChanges} className="bg-accent hover:bg-accent/90 text-accent-foreground">Save Changes</Button>
+                    <Button size="lg" onClick={handleSaveChanges}>Save Changes</Button>
                 </div>
             </div>
         </div>

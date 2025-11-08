@@ -104,7 +104,6 @@ export default function InterviewPage() {
     if (isFinishing) return;
     setIsFinishing(true);
     
-    // Ensure the final answer is included in the transcript
     const answerToSave = finalAnswer !== undefined ? finalAnswer : userAnswer;
 
     const finalTranscript = [
@@ -117,7 +116,6 @@ export default function InterviewPage() {
     
     try {
       const configToSave = { ...interviewConfig, date: new Date().toISOString() };
-      // The targetCompany might be an empty string from the form, which we should treat as undefined
       if (!configToSave.targetCompany) {
         delete configToSave.targetCompany;
       }
@@ -192,7 +190,7 @@ export default function InterviewPage() {
       </header>
 
       <div className="flex-1 flex flex-col gap-4 overflow-y-auto">
-        <Card className="flex-shrink-0 shadow-lg animate-fade-in-up bg-card/50">
+        <Card className="flex-shrink-0 shadow-lg animate-fade-in-up">
           <CardContent className="p-6">
             <div className="flex items-start gap-4">
               <Avatar>
@@ -232,7 +230,7 @@ export default function InterviewPage() {
                  </Button>
                  <p className="text-sm text-muted-foreground">Mic is {isMicOn ? 'on' : 'off'}</p>
               </div>
-              <Button size="lg" onClick={handleNextQuestion} className="w-1/2 transition-transform hover:scale-[1.02] active:scale-[0.98]">
+              <Button size="lg" onClick={handleNextQuestion} className="w-1/2">
                 {currentQuestionIndex < questions.length - 1 ? (
                   <>
                     <Send className="mr-2 h-4 w-4" />
