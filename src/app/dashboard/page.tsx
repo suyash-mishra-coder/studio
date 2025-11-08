@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { BarChart, ChevronRight, History } from 'lucide-react';
+import { BarChart, BookOpen, ChevronRight, History, TrendingUp, Users } from 'lucide-react';
 import Link from 'next/link';
 import { format } from 'date-fns';
 import type { ChartConfig } from '@/components/ui/chart';
@@ -29,12 +29,26 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { getSessions } from '@/lib/data';
 import type { InterviewSession } from '@/lib/types';
+import { SPECIALTIES } from '@/lib/constants';
 
-const chartConfig = {
+const scoreChartConfig = {
   score: {
     label: 'Score',
     color: 'hsl(var(--primary))',
   },
+} satisfies ChartConfig;
+
+const specialtyChartConfig = {
+  score: {
+    label: 'Average Score',
+  },
+  ...SPECIALTIES.reduce((acc, spec, i) => {
+    acc[spec] = {
+      label: spec,
+      color: `hsl(var(--chart-${(i % 5) + 1}))`,
+    };
+    return acc;
+  }, {} as Record<string, { label: string; color: string }>),
 } satisfies ChartConfig;
 
 export default function DashboardPage() {
@@ -50,32 +64,51 @@ export default function DashboardPage() {
     loadData();
   }, []);
 
-  const chartData = sessions
+  const scoreChartData = sessions.length > 0 ? sessions
     .map(session => ({
       date: format(new Date(session.date), 'MMM d'),
       score: session.score,
     }))
-    .reverse();
+    .reverse().slice(-10) : [];
+    
+  const specialtyScoreData = React.useMemo(() => {
+    if (sessions.length === 0) return [];
+    
+    const specialtyScores: Record<string, { totalScore: number; count: number }> = {};
+    sessions.forEach(session => {
+        if (!specialtyScores[session.specialty]) {
+            specialtyScores[session.specialty] = { totalScore: 0, count: 0 };
+        }
+        specialtyScores[session.specialty].totalScore += session.score || 0;
+        specialtyScores[session.specialty].count++;
+    });
+
+    return Object.entries(specialtyScores).map(([specialty, data]) => ({
+        specialty,
+        score: parseFloat((data.totalScore / data.count).toFixed(1)),
+    }));
+  }, [sessions]);
+
 
   return (
     <div className="container mx-auto py-8 px-4">
       <h1 className="text-3xl font-bold mb-8 text-foreground animate-fade-in-up">Your Dashboard</h1>
 
-      <div className="grid gap-8">
-        <Card className="animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
+      <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+        <Card className="lg:col-span-2 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
           <CardHeader>
             <div className="flex items-center gap-3">
-              <BarChart className="h-6 w-6 text-primary" />
+              <TrendingUp className="h-6 w-6 text-primary" />
               <CardTitle>Performance Trend</CardTitle>
             </div>
-            <CardDescription>Your mock interview scores over time.</CardDescription>
+            <CardDescription>Your mock interview scores over the last 10 sessions.</CardDescription>
           </CardHeader>
           <CardContent>
             {loading ? (
               <div className="h-[250px] w-full bg-muted animate-pulse rounded-md" />
             ) : sessions.length > 0 ? (
-              <ChartContainer config={chartConfig} className="h-[250px] w-full">
-                <BarChart accessibilityLayer data={chartData}>
+              <ChartContainer config={scoreChartConfig} className="h-[250px] w-full">
+                <BarChart accessibilityLayer data={scoreChartData}>
                   <ChartXAxis
                     dataKey="date"
                     tickLine={false}
@@ -89,7 +122,7 @@ export default function DashboardPage() {
                     content={<ChartTooltipContent indicator="dot" />}
                   />
                   <ChartLegend content={<ChartLegendContent />} />
-                  <ChartBar dataKey="score" radius={4} />
+                  <ChartBar dataKey="score" radius={4} fill="var(--color-score)" />
                 </BarChart>
               </ChartContainer>
             ) : (
@@ -99,8 +132,51 @@ export default function DashboardPage() {
             )}
           </CardContent>
         </Card>
-
+        
         <Card className="animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+            <CardHeader>
+                <div className="flex items-center gap-3">
+                    <BarChart className="h-6 w-6 text-primary" />
+                    <CardTitle>Scores by Specialty</CardTitle>
+                </div>
+                <CardDescription>Your average score in each area.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                {loading ? (
+                  <div className="h-[250px] w-full bg-muted animate-pulse rounded-md" />
+                ) : specialtyScoreData.length > 0 ? (
+                    <ChartContainer config={specialtyChartConfig} className="h-[250px] w-full">
+                        <BarChart accessibilityLayer data={specialtyScoreData} layout="vertical">
+                            <ChartYAxis
+                                dataKey="specialty"
+                                type="category"
+                                tickLine={false}
+                                tickMargin={10}
+                                axisLine={false}
+                                className="w-24"
+                                tickFormatter={(value) => value.length > 15 ? `${value.substring(0, 15)}...` : value}
+                            />
+                            <ChartXAxis type="number" domain={[0, 10]} hide />
+                            <ChartTooltip
+                                cursor={false}
+                                content={<ChartTooltipContent indicator="line" />}
+                            />
+                            <ChartBar dataKey="score" layout="vertical" radius={4}>
+                                {specialtyScoreData.map((entry) => (
+                                    <RechartsPrimitive.Cell key={entry.specialty} fill={specialtyChartConfig[entry.specialty]?.color || 'hsl(var(--primary))'} />
+                                ))}
+                            </ChartBar>
+                        </BarChart>
+                    </ChartContainer>
+                ) : (
+                    <div className="h-[250px] flex items-center justify-center text-muted-foreground">
+                        No data to display.
+                    </div>
+                )}
+            </CardContent>
+        </Card>
+
+        <Card className="lg:col-span-3 animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
           <CardHeader>
             <div className="flex items-center gap-3">
               <History className="h-6 w-6 text-primary" />
@@ -131,7 +207,7 @@ export default function DashboardPage() {
                     </TableRow>
                   ))
                 ) : sessions.length > 0 ? (
-                  sessions.map((session) => (
+                  sessions.slice(0, 5).map((session) => (
                     <TableRow key={session.id}>
                       <TableCell>{format(new Date(session.date), 'MMMM d, yyyy')}</TableCell>
                       <TableCell className="font-medium">{session.role}</TableCell>
@@ -139,7 +215,7 @@ export default function DashboardPage() {
                         <Badge variant="secondary">{session.specialty}</Badge>
                       </TableCell>
                       <TableCell className="text-right">
-                        <Badge variant={session.score && session.score >= 7 ? 'default' : 'destructive'}>
+                        <Badge variant={session.score && session.score >= 7 ? 'default' : session.score && session.score >= 4 ? 'secondary' : 'destructive'}>
                           {session.score}/10
                         </Badge>
                       </TableCell>
@@ -155,7 +231,7 @@ export default function DashboardPage() {
                 ) : (
                   <TableRow>
                     <TableCell colSpan={5} className="text-center h-24">
-                      No sessions found.
+                      No sessions found. Start an interview to build your history.
                     </TableCell>
                   </TableRow>
                 )}

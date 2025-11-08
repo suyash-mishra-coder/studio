@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Bot, Code2, Loader, Mic, MicOff, Send, CheckCircle, Timer } from 'lucide-react';
+import { Bot, Code2, Loader, Mic, MicOff, Send, CheckCircle, Timer, Radio } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -13,6 +13,7 @@ import { useToast } from '@/hooks/use-toast';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import type { InterviewTranscriptItem } from '@/lib/types';
 import { saveSession } from '@/lib/data';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 const INTERVIEW_DURATION_MIN = 45;
 
@@ -54,7 +55,11 @@ export default function InterviewPage() {
   const [transcript, setTranscript] = React.useState<InterviewTranscriptItem[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [isFinishing, setIsFinishing] = React.useState(false);
-  const [isMicOn, setMicOn] = React.useState(true);
+
+  const [isRecording, setIsRecording] = React.useState(false);
+  const [hasMicPermission, setHasMicPermission] = React.useState<boolean | null>(null);
+  const recognitionRef = React.useRef<SpeechRecognition | null>(null);
+
   const aiAvatar = PlaceHolderImages.find(p => p.id === 'ai-avatar');
   const userName = searchParams.get('name') || "User";
 
@@ -99,10 +104,89 @@ export default function InterviewPage() {
     }
     fetchQuestions();
   }, [toast, interviewConfig]);
+  
+  React.useEffect(() => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      const recognition = new SpeechRecognition();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.lang = 'en-US';
+
+      recognition.onresult = (event) => {
+        let interimTranscript = '';
+        let finalTranscript = '';
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          if (event.results[i].isFinal) {
+            finalTranscript += event.results[i][0].transcript;
+          } else {
+            interimTranscript += event.results[i][0].transcript;
+          }
+        }
+        setUserAnswer(prev => prev + finalTranscript);
+      };
+      
+      recognition.onend = () => {
+        setIsRecording(false);
+      };
+
+      recognition.onerror = (event) => {
+        console.error('Speech recognition error', event.error);
+        if (event.error === 'not-allowed') {
+          setHasMicPermission(false);
+          toast({
+              variant: 'destructive',
+              title: 'Microphone Access Denied',
+              description: 'Please enable microphone permissions in your browser settings to use voice input.',
+          });
+        }
+      };
+
+      recognitionRef.current = recognition;
+    } else {
+       setHasMicPermission(false);
+    }
+  }, [toast]);
+
+
+  const toggleRecording = async () => {
+    if (!recognitionRef.current) {
+        toast({
+            title: "Voice Not Supported",
+            description: "Your browser doesn't support speech recognition.",
+            variant: "destructive"
+        });
+        return;
+    }
+
+    if (isRecording) {
+      recognitionRef.current.stop();
+      setIsRecording(false);
+    } else {
+        try {
+            await navigator.mediaDevices.getUserMedia({ audio: true });
+            setHasMicPermission(true);
+            recognitionRef.current.start();
+            setIsRecording(true);
+        } catch (error) {
+            console.error('Error accessing microphone:', error);
+            setHasMicPermission(false);
+             toast({
+                variant: 'destructive',
+                title: 'Microphone Access Denied',
+                description: 'Please enable microphone permissions in your browser settings.',
+            });
+        }
+    }
+  };
 
   const finishInterview = React.useCallback(async (finalAnswer?: string) => {
     if (isFinishing) return;
     setIsFinishing(true);
+
+    if (isRecording) {
+      recognitionRef.current?.stop();
+    }
     
     const answerToSave = finalAnswer !== undefined ? finalAnswer : userAnswer;
 
@@ -139,7 +223,7 @@ export default function InterviewPage() {
       });
       setIsFinishing(false);
     }
-  }, [isFinishing, transcript, questions, currentQuestionIndex, userAnswer, router, interviewConfig, toast]);
+  }, [isFinishing, transcript, questions, currentQuestionIndex, userAnswer, router, interviewConfig, toast, isRecording]);
 
 
   const handleNextQuestion = () => {
@@ -150,6 +234,10 @@ export default function InterviewPage() {
         variant: "destructive",
       });
       return;
+    }
+
+    if (isRecording) {
+      recognitionRef.current?.stop();
     }
 
     if (currentQuestionIndex >= questions.length - 1) {
@@ -207,9 +295,18 @@ export default function InterviewPage() {
         
         <div className="flex-1 flex flex-col min-h-[250px] animate-fade-in-up" style={{animationDelay: '0.2s'}}>
           <label htmlFor="code-editor" className="font-medium mb-2 flex items-center gap-2"><Code2 className="h-5 w-5 text-primary"/> Your Answer / Notepad</label>
+           { hasMicPermission === false && (
+                <Alert variant="destructive" className="mb-4">
+                  <MicOff className="h-4 w-4" />
+                  <AlertTitle>Microphone Not Available</AlertTitle>
+                  <AlertDescription>
+                    Speech recognition is not available or has been denied. Please check your browser settings and permissions. You can still type your answers.
+                  </AlertDescription>
+                </Alert>
+           )}
           <Textarea 
             id="code-editor"
-            placeholder="Your answer or code here... You can talk to the AI, but for now, your response must be written."
+            placeholder="Click the microphone to start speaking, or type your answer here..."
             value={userAnswer}
             onChange={(e) => setUserAnswer(e.target.value)}
             className="flex-1 font-mono text-sm shadow-inner bg-background/80"
@@ -225,10 +322,10 @@ export default function InterviewPage() {
           ) : (
             <div className="flex items-center justify-between">
                <div className="flex items-center gap-2">
-                 <Button size="icon" variant={isMicOn ? 'secondary' : 'destructive'} onClick={() => setMicOn(!isMicOn)}>
-                    {isMicOn ? <Mic className="h-5 w-5"/> : <MicOff className="h-5 w-5"/>}
+                 <Button size="icon" variant={isRecording ? 'destructive' : 'outline'} onClick={toggleRecording}>
+                    {isRecording ? <Radio className="h-5 w-5 animate-pulse"/> : <Mic className="h-5 w-5"/>}
                  </Button>
-                 <p className="text-sm text-muted-foreground">Mic is {isMicOn ? 'on' : 'off'}</p>
+                 <p className="text-sm text-muted-foreground">{isRecording ? 'Recording...' : 'Voice Input'}</p>
               </div>
               <Button size="lg" onClick={handleNextQuestion} className="w-1/2">
                 {currentQuestionIndex < questions.length - 1 ? (

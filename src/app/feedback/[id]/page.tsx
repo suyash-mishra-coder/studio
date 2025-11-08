@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { useParams } from 'next/navigation';
-import { ThumbsUp, ThumbsDown, Sparkles, Star, Loader, BookOpen, Clock, Bot, User } from 'lucide-react';
+import { ThumbsUp, ThumbsDown, Sparkles, Star, Loader, BookOpen, Clock, Bot, User, MessageCircle } from 'lucide-react';
 import { format } from 'date-fns';
 import { motion } from 'framer-motion';
 
@@ -177,8 +177,22 @@ export default function FeedbackPage() {
                 </CardContent>
             </Card>
           </motion.div>
-
+          
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.4 }}>
+            <Card>
+                <CardHeader>
+                <div className="flex items-center gap-3">
+                    <MessageCircle className="h-6 w-6 text-blue-500" />
+                    <CardTitle className="text-blue-500">Communication Analysis</CardTitle>
+                </div>
+                </CardHeader>
+                <CardContent>
+                <p className="text-muted-foreground whitespace-pre-wrap">{feedback.communicationAnalysis}</p>
+                </CardContent>
+            </Card>
+          </motion.div>
+
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.5 }}>
             <Card>
                 <CardHeader>
                 <div className="flex items-center gap-3">
@@ -198,7 +212,7 @@ export default function FeedbackPage() {
         </div>
       </div>
       
-      <motion.div className="mt-12" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.5 }}>
+      <motion.div className="mt-12" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.6 }}>
         <Card>
           <CardHeader>
             <div className="flex items-center gap-3">

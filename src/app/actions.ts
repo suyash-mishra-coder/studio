@@ -32,6 +32,7 @@ export async function getPersonalizedFeedback(input: ProvidePersonalizedFeedback
       score: 7,
       strengths: 'Good communication skills and a solid theoretical foundation.',
       weaknesses: 'Practical examples could be more detailed. Some hesitation on complex questions.',
+      communicationAnalysis: 'You communicated your ideas clearly, but sometimes used filler words like "um" and "like". Try to be more concise in your explanations.',
       improvementTips: '1. Use the STAR method to structure answers about your experience. 2. Review fundamental concepts of your specialty. 3. Practice coding challenges under time constraints.',
     };
   }

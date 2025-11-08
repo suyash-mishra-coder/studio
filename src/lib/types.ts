@@ -20,5 +20,6 @@ export interface InterviewFeedback {
   strengths: string;
   weaknesses: string;
   improvementTips: string;
+  communicationAnalysis: string;
   transcript: InterviewTranscriptItem[];
 }
