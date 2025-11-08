@@ -202,12 +202,22 @@ export default function Home() {
     <div className="flex flex-col items-center justify-center min-h-full p-4 md:p-8">
       <div className="w-full max-w-4xl">
         <header className="text-center mb-10 animate-fade-in-up">
-          <h1 className="font-headline text-4xl md:text-5xl font-bold text-primary">
+          <motion.h1 
+            className="font-headline text-4xl md:text-5xl font-bold text-primary"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
             Mockview AI
-          </h1>
-          <p className="mt-3 text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
+          </motion.h1>
+          <motion.p 
+            className="mt-3 text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
             Ace your next tech interview with our AI-powered real-time simulation platform.
-          </p>
+          </motion.p>
         </header>
 
         <AnimatePresence>
@@ -220,7 +230,7 @@ export default function Home() {
               transition={{ duration: 0.3 }}
               className="text-center"
             >
-              <Button size="lg" className="transition-transform hover:scale-[1.02] active:scale-[0.98]" onClick={() => setShowForm(true)}>
+              <Button size="lg" className="transition-transform hover:scale-[1.02] active:scale-[0.98] bg-accent hover:bg-accent/90 text-accent-foreground text-lg px-8 py-6" onClick={() => setShowForm(true)}>
                 Get Started
               </Button>
             </motion.div>
@@ -231,7 +241,7 @@ export default function Home() {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               transition={{ duration: 0.4, ease: 'easeOut' }}
             >
-              <Card className="shadow-2xl bg-card/50 backdrop-blur-sm">
+              <Card className="shadow-2xl bg-card/50 backdrop-blur-sm border-primary/20">
                 <CardHeader>
                   <CardTitle className="text-2xl font-headline">Prepare Your Interview</CardTitle>
                   <CardDescription>
