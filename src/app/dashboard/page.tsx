@@ -113,7 +113,7 @@ export default function DashboardPage() {
               <CardContent>
                 <div className="text-2xl font-bold">{sessions.length}</div>
                 <p className="text-xs text-muted-foreground">
-                  Completed interview sessions.
+                  Your raw attempt count.
                 </p>
               </CardContent>
             </Card>
@@ -127,7 +127,7 @@ export default function DashboardPage() {
               <CardContent>
                 <div className="text-2xl font-bold">{(sessions.reduce((acc, s) => acc + (s.score || 0), 0) / sessions.length || 0).toFixed(1)}/10</div>
                 <p className="text-xs text-muted-foreground">
-                  Your average performance.
+                  Your performance benchmark.
                 </p>
               </CardContent>
             </Card>
@@ -139,19 +139,19 @@ export default function DashboardPage() {
               <CardContent>
                  <div className="text-2xl font-bold truncate">{specialtyScoreData.length > 0 ? specialtyScoreData.sort((a,b) => b.score - a.score)[0].specialty : 'N/A'}</div>
                 <p className="text-xs text-muted-foreground">
-                  Your strongest area so far.
+                  Your least weak area.
                 </p>
               </CardContent>
             </Card>
              <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Practice Topics</CardTitle>
+                <CardTitle className="text-sm font-medium">Topics Covered</CardTitle>
                 <BookOpen className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{[...new Set(sessions.map(s => s.specialty))].length}</div>
                 <p className="text-xs text-muted-foreground">
-                  Number of unique topics covered.
+                  Number of unique practice areas.
                 </p>
               </CardContent>
             </Card>
@@ -161,7 +161,7 @@ export default function DashboardPage() {
         <Card className="lg:col-span-4">
           <CardHeader>
             <CardTitle>Performance Trend</CardTitle>
-            <CardDescription>Your scores from the last 10 interviews.</CardDescription>
+            <CardDescription>Your score history. Last 10 sessions.</CardDescription>
           </CardHeader>
           <CardContent>
             {loading ? (
@@ -187,7 +187,7 @@ export default function DashboardPage() {
               </ChartContainer>
             ) : (
               <div className="h-[250px] flex items-center justify-center text-muted-foreground">
-                No data yet. Complete an interview to see your trend.
+                No data. Do an interview.
               </div>
             )}
           </CardContent>
@@ -196,7 +196,7 @@ export default function DashboardPage() {
         <Card className="lg:col-span-3">
             <CardHeader>
                 <CardTitle>Scores by Specialty</CardTitle>
-                <CardDescription>Your average score in each technical area.</CardDescription>
+                <CardDescription>Average scores per technical area.</CardDescription>
             </CardHeader>
             <CardContent>
                 {loading ? (
@@ -227,7 +227,7 @@ export default function DashboardPage() {
                     </ChartContainer>
                 ) : (
                     <div className="h-[250px] flex items-center justify-center text-muted-foreground">
-                        Complete an interview to see your scores.
+                        Complete an interview to see scores.
                     </div>
                 )}
             </CardContent>
@@ -237,8 +237,8 @@ export default function DashboardPage() {
           <CardHeader>
             <div className="flex items-center justify-between">
                 <div>
-                    <CardTitle>Recent Sessions</CardTitle>
-                    <CardDescription>Your most recent interview attempts.</CardDescription>
+                    <CardTitle>Recent History</CardTitle>
+                    <CardDescription>Your last few attempts.</CardDescription>
                 </div>
                  <Button asChild variant="ghost">
                     <Link href="#">View All</Link>
@@ -292,7 +292,7 @@ export default function DashboardPage() {
                 ) : (
                   <TableRow>
                     <TableCell colSpan={5} className="text-center h-24">
-                      No sessions found. Start an interview to see your history.
+                      No sessions found. Start an interview.
                     </TableCell>
                   </TableRow>
                 )}

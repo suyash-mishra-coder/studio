@@ -33,17 +33,17 @@ export default function Home() {
     }
   }, []);
   
-  React.useEffect(() => {
-    if (!isUserLoading && user) {
-      router.push('/dashboard');
-    }
-  }, [user, isUserLoading, router]);
-
   const handleStart = () => {
-    if (trialsUsed >= MAX_FREE_TRIALS) {
+    if (trialsUsed >= MAX_FREE_TRIALS && !user) {
       setShowTrialEnded(true);
     } else {
-      setStep(1);
+        // If user is logged in, use their display name
+        if (user?.displayName) {
+            setName(user.displayName);
+            setStep(2);
+        } else {
+            setStep(1);
+        }
     }
   };
   
@@ -55,10 +55,12 @@ export default function Home() {
   }
 
   const handleStartInterview = (values: FormValues) => {
-    if (trialsUsed < MAX_FREE_TRIALS) {
-      const newTrialCount = trialsUsed + 1;
-      localStorage.setItem('mockview-trials-used', newTrialCount.toString());
-      setTrialsUsed(newTrialCount);
+    if (trialsUsed < MAX_FREE_TRIALS || user) {
+      if (!user) {
+        const newTrialCount = trialsUsed + 1;
+        localStorage.setItem('mockview-trials-used', newTrialCount.toString());
+        setTrialsUsed(newTrialCount);
+      }
 
       const params = new URLSearchParams({
         ...values,
@@ -82,12 +84,20 @@ export default function Home() {
     <div className="flex flex-col min-h-screen">
        <header className="absolute top-0 right-0 p-6 z-10">
           <nav className="flex items-center gap-4">
-              <Button variant="ghost" asChild>
-                  <Link href="/login">Login</Link>
+            { user ? (
+                 <Button variant="outline" asChild>
+                  <Link href="/dashboard">Dashboard</Link>
               </Button>
-              <Button asChild>
-                  <Link href="/signup">Sign Up <ArrowRight className="ml-2 h-4 w-4" /></Link>
-              </Button>
+            ) : (
+                <>
+                    <Button variant="ghost" asChild>
+                        <Link href="/login">Login</Link>
+                    </Button>
+                    <Button asChild>
+                        <Link href="/signup">Sign Up <ArrowRight className="ml-2 h-4 w-4" /></Link>
+                    </Button>
+                </>
+            )}
           </nav>
       </header>
 
@@ -108,7 +118,7 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
             >
-              Ace your technical interviews with AI-powered feedback and practice.
+              Hone your interview skills with an AI that's seen it all. Get ready for the real world.
             </motion.p>
           </header>
 
@@ -124,7 +134,7 @@ export default function Home() {
                 <Alert>
                   <AlertTitle className="font-bold">Free Trial Ended</AlertTitle>
                   <AlertDescription>
-                    You've used all your free interviews. Sign up to continue practicing.
+                    You've used all your free interviews. Sign up to continue. No more free rides.
                   </AlertDescription>
                   <div className="flex gap-4 mt-4">
                     <Button className="w-full" asChild>
@@ -148,7 +158,7 @@ export default function Home() {
                 className="text-center"
               >
                 <Button size="lg" className="text-lg px-8 py-6" onClick={handleStart}>
-                  Start Free Interview ({MAX_FREE_TRIALS - trialsUsed} left)
+                    { user ? 'Start New Interview' : `Start Free Interview (${MAX_FREE_TRIALS - trialsUsed} left)`}
                 </Button>
               </motion.div>
             )}
@@ -162,7 +172,7 @@ export default function Home() {
                   transition={{ duration: 0.3 }}
                   className="text-center"
               >
-                  <h2 className="text-2xl font-semibold mb-4">First, what should we call you?</h2>
+                  <h2 className="text-2xl font-semibold mb-4">First, what's your name?</h2>
                   <form onSubmit={handleNameSubmit} className="flex gap-2">
                       <Input 
                           type="text"
@@ -186,9 +196,9 @@ export default function Home() {
               >
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-2xl font-headline">Welcome, {name}!</CardTitle>
+                    <CardTitle className="text-2xl font-headline">Alright, {name}.</CardTitle>
                     <CardDescription>
-                      Let's set up your mock interview. Choose your role and topic.
+                      Let's set up your mock interview. Don't waste time.
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
