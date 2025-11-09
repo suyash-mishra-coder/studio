@@ -16,8 +16,8 @@ export type ProvidePersonalizedFeedbackInput = z.infer<typeof ProvidePersonalize
 const ProvidePersonalizedFeedbackOutputSchema = z.object({
   score: z.number().describe('A brutally honest numerical score from 1 to 10, where 1 is abysmal and 10 is barely competent. Do not give high scores easily.'),
   strengths: z.string().describe('A very brief, direct summary of the few things the candidate did not completely fail at. Do not use positive, encouraging language. Get to the point.'),
-  weaknesses: z'string'().describe('A detailed, brutally honest, and critical analysis of every area the candidate was weak in. Be blunt. Quote their mistakes from the transcript. Do not sugar-coat anything. This is the most important section. Format as a paragraph.'),
-  communicationAnalysis: z'string'().describe('A critical analysis of the candidate\'s communication. Point out every filler word, rambling sentence, and moment of hesitation. Was it clear? Was it concise? Probably not. State it. Format as a paragraph.'),
+  weaknesses: z.string().describe('A detailed, brutally honest, and critical analysis of every area the candidate was weak in. Be blunt. Quote their mistakes from the transcript. Do not sugar-coat anything. This is the most important section. Format as a paragraph.'),
+  communicationAnalysis: z.string().describe('A critical analysis of the candidate\'s communication. Point out every filler word, rambling sentence, and moment of hesitation. Was it clear? Was it concise? Probably not. State it. Format as a paragraph.'),
   improvementTips: z.string().describe('A numbered list of 3-5 blunt, actionable directives for improvement. These should directly address the identified weaknesses. Don\'t suggest, command. Example: "1. Stop using the word \'like\'. 2. You clearly don\'t understand X, study it."'),
 });
 
