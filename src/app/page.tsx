@@ -7,7 +7,6 @@ import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
-import { Briefcase, Code, GraduationCap, Building, User } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 import { Button } from '@/components/ui/button';
@@ -180,90 +179,92 @@ export default function Home() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-4 md:p-8 bg-background">
-      <div className="w-full max-w-lg flex flex-col flex-1 justify-center">
-        <header className="text-center mb-10 animate-fade-in-up">
-          <motion.h1 
-            className="font-headline text-4xl md:text-5xl font-bold text-foreground"
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            Mockview AI
-          </motion.h1>
-          <motion.p 
-            className="mt-3 text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-          >
-            Ace your next tech interview with our AI-powered real-time simulation platform.
-          </motion.p>
-        </header>
-
-        <AnimatePresence mode="wait">
-          {step === 0 && (
-            <motion.div
-              key="step0"
+    <div className="flex flex-col min-h-screen">
+      <div className="flex flex-col flex-1 items-center justify-center p-4 md:p-8 bg-background">
+        <div className="w-full max-w-lg">
+          <header className="text-center mb-10 animate-fade-in-up">
+            <motion.h1 
+              className="font-headline text-4xl md:text-5xl font-bold text-foreground"
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              Mockview AI
+            </motion.h1>
+            <motion.p 
+              className="mt-3 text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.3 }}
-              className="text-center"
+              transition={{ duration: 0.5, delay: 0.2 }}
             >
-              <Button size="lg" className="text-lg px-8 py-6" onClick={handleStart}>
-                Get Started
-              </Button>
-            </motion.div>
-          )}
+              Ace your next tech interview with our AI-powered real-time simulation platform.
+            </motion.p>
+          </header>
 
-          {step === 1 && (
-            <motion.div
-                key="step1"
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
+          <AnimatePresence mode="wait">
+            {step === 0 && (
+              <motion.div
+                key="step0"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.3 }}
                 className="text-center"
-            >
-                <h2 className="text-2xl font-semibold mb-4">Welcome! What should we call you?</h2>
-                 <form onSubmit={handleNameSubmit} className="flex gap-2">
-                    <Input 
-                        type="text"
-                        placeholder="Enter your name..."
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        className="text-center text-lg h-12"
-                        autoFocus
-                    />
-                    <Button type="submit" size="lg" className="h-12">Continue</Button>
-                 </form>
-            </motion.div>
-          )}
-          
-          {step === 2 && (
-            <motion.div
-              key="step2"
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.4, ease: 'easeOut' }}
-            >
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-2xl font-headline">Prepare Your Interview, {name}</CardTitle>
-                  <CardDescription>
-                    Configure your mock interview to match the role you're applying for.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <PreInterviewForm name={name}/>
-                </CardContent>
-              </Card>
-            </motion.div>
-          )}
-        </AnimatePresence>
+              >
+                <Button size="lg" className="text-lg px-8 py-6" onClick={handleStart}>
+                  Get Started
+                </Button>
+              </motion.div>
+            )}
+
+            {step === 1 && (
+              <motion.div
+                  key="step1"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ duration: 0.3 }}
+                  className="text-center"
+              >
+                  <h2 className="text-2xl font-semibold mb-4">Welcome! What should we call you?</h2>
+                  <form onSubmit={handleNameSubmit} className="flex gap-2">
+                      <Input 
+                          type="text"
+                          placeholder="Enter your name..."
+                          value={name}
+                          onChange={(e) => setName(e.target.value)}
+                          className="text-center text-lg h-12"
+                          autoFocus
+                      />
+                      <Button type="submit" size="lg" className="h-12">Continue</Button>
+                  </form>
+              </motion.div>
+            )}
+            
+            {step === 2 && (
+              <motion.div
+                key="step2"
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.4, ease: 'easeOut' }}
+              >
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-2xl font-headline">Prepare Your Interview, {name}</CardTitle>
+                    <CardDescription>
+                      Configure your mock interview to match the role you're applying for.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <PreInterviewForm name={name}/>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
-       <Footer />
+      <Footer />
     </div>
   );
 }
