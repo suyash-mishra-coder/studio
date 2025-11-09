@@ -1,0 +1,172 @@
+{
+  "entities": {
+    "User": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "User",
+      "type": "object",
+      "description": "Represents a user of the Mockview AI platform.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the user.",
+          "format": "uuid"
+        },
+        "email": {
+          "type": "string",
+          "description": "Email address of the user.",
+          "format": "email"
+        },
+        "name": {
+          "type": "string",
+          "description": "Full name of the user."
+        },
+        "signUpDate": {
+          "type": "string",
+          "description": "Date when the user signed up.",
+          "format": "date-time"
+        },
+        "lastLogin": {
+          "type": "string",
+          "description": "Last login timestamp.",
+          "format": "date-time"
+        },
+        "freeTrialsRemaining": {
+          "type": "number",
+          "description": "Number of free trials remaining for the user."
+        }
+      },
+      "required": [
+        "id",
+        "email",
+        "name",
+        "signUpDate"
+      ]
+    },
+    "MockInterviewSession": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "MockInterviewSession",
+      "type": "object",
+      "description": "Represents a single mock interview session.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the mock interview session.",
+          "format": "uuid"
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to User. (Relationship: User 1:N MockInterviewSession)"
+        },
+        "role": {
+          "type": "string",
+          "description": "The role the user is interviewing for."
+        },
+        "experienceLevel": {
+          "type": "string",
+          "description": "The experience level of the user."
+        },
+        "specialty": {
+          "type": "string",
+          "description": "The technical specialty of the user."
+        },
+        "topic": {
+          "type": "string",
+          "description": "The topic of the interview."
+        },
+        "targetCompany": {
+          "type": "string",
+          "description": "The target company for the interview."
+        },
+        "startTime": {
+          "type": "string",
+          "description": "Timestamp when the interview started.",
+          "format": "date-time"
+        },
+        "endTime": {
+          "type": "string",
+          "description": "Timestamp when the interview ended.",
+          "format": "date-time"
+        },
+        "score": {
+          "type": "number",
+          "description": "The score given to the user"
+        },
+        "strengths": {
+          "type": "string",
+          "description": "Strengths shown in the interview"
+        },
+        "weaknesses": {
+          "type": "string",
+          "description": "Weaknesses shown in the interview"
+        },
+        "improvementTips": {
+          "type": "string",
+          "description": "Improvement tips given to the user"
+        },
+        "videoReplayUrl": {
+          "type": "string",
+          "description": "The url of the video replay",
+          "format": "uri"
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "startTime",
+        "endTime",
+        "role",
+        "experienceLevel",
+        "specialty",
+        "topic",
+        "targetCompany"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/users/{userId}",
+        "definition": {
+          "entityName": "User",
+          "schema": {
+            "$ref": "#/backend/entities/User"
+          },
+          "description": "Stores user profile information. Path-based ownership ensures only the user can access their own profile.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier of the user."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/mockInterviewSessions/{sessionId}",
+        "definition": {
+          "entityName": "MockInterviewSession",
+          "schema": {
+            "$ref": "#/backend/entities/MockInterviewSession"
+          },
+          "description": "Stores mock interview sessions for a specific user. Path-based ownership ensures that only the user can access their own interview sessions.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier of the user."
+            },
+            {
+              "name": "sessionId",
+              "description": "The unique identifier of the mock interview session."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "This design prioritizes security and scalability for the Mockview AI platform.  It leverages path-based ownership for user data and mock interview sessions to simplify security rules and ensure data isolation. Authorization Independence is achieved by avoiding `get()` calls in the security rules. Specifically, no denormalization is necessary because all access control is based on path-based ownership (`/users/{userId}/mockInterviewSessions/{sessionId}`).  All `list` operations will be secure given that the security rules will not be used as filters, due to segregation. Free trials are managed through the `freeTrialsRemaining` field in the `User` document and are handled in the application logic before any Firestore operations. The use of standard naming conventions, explicit state modeling (though not present in the MVP schema), and predictable schemas enhances debuggability."
+  }
+}

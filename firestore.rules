@@ -1,0 +1,102 @@
+/**
+ * @fileoverview Firestore Security Rules for Mockview AI.
+ *
+ * Core Philosophy:
+ * This ruleset enforces a strict user-ownership model for user profiles and their associated mock interview sessions.
+ * Users can only access their own data, ensuring privacy and preventing unauthorized access.
+ * Anonymous access is disabled by default.
+ *
+ * Data Structure:
+ * - `/users/{userId}`: Stores user profile information.
+ * - `/users/{userId}/mockInterviewSessions/{sessionId}`: Stores mock interview sessions for each user.
+ *
+ * Key Security Decisions:
+ * - User listing is disallowed to prevent enumeration.
+ * - All writes are explicitly authorized to prevent accidental open access.
+ * - The `freeTrialsRemaining` field is managed by application logic, and the rules do not directly enforce trial limits.
+ * - No validation is performed on data types or required fields, except where necessary to maintain relational integrity (e.g., userId consistency).
+ *
+ * Denormalization for Authorization:
+ *   Authorization is based on path-based ownership, so no denormalization is needed.
+ * Structural Segregation:
+ *   All user-specific data is stored under the `/users/{userId}` path, providing clear segregation.
+ */
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /**
+     * @description Defines if the user is signed in.
+     * @allow if request.auth != null
+     * @deny if request.auth == null
+     * @principle Checks for verified identity
+     */
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    /**
+     * @description Defines if the user id matches the authenticated user id.
+     * @allow if request.auth.uid == userId
+     * @deny if request.auth.uid != userId
+     * @principle Path-based ownership.
+     */
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+
+    /**
+     * @description Defines if the user id matches the authenticated user id and the resource exists.
+     * @allow if request.auth.uid == userId && resource != null
+     * @deny if request.auth.uid != userId
+     * @principle Path-based ownership and validates the document exists.
+     */
+    function isExistingOwner(userId) {
+      return isOwner(userId) && resource != null;
+    }
+
+    /**
+     * @description Rules for the /users/{userId} collection.
+     * @path /users/{userId}
+     * @allow (create) - User with UID 'user_abc' can create their own profile with matching ID.
+     * @allow (get) - User with UID 'user_abc' can read their own profile.
+     * @allow (list) - User with UID 'user_abc' can list profiles (DENIED).
+     * @allow (update) - User with UID 'user_abc' can update their own profile.
+     * @allow (delete) - User with UID 'user_abc' can delete their own profile.
+     * @deny (create) - User with UID 'user_xyz' cannot create a profile for 'user_abc'.
+     * @deny (get) - User with UID 'user_xyz' cannot read the profile of 'user_abc'.
+     * @deny (update) - User with UID 'user_xyz' cannot update the profile of 'user_abc'.
+     * @deny (delete) - User with UID 'user_xyz' cannot delete the profile of 'user_abc'.
+     * @principle Enforces document ownership for all operations.
+     */
+    match /users/{userId} {
+      allow get: if isOwner(userId);
+      allow list: if false; // User listing is not permitted.
+      allow create: if isOwner(userId) && request.resource.data.id == userId;
+      allow update: if isExistingOwner(userId) && request.resource.data.id == resource.data.id;
+      allow delete: if isExistingOwner(userId);
+    }
+
+    /**
+     * @description Rules for the /users/{userId}/mockInterviewSessions/{sessionId} collection.
+     * @path /users/{userId}/mockInterviewSessions/{sessionId}
+     * @allow (create) - User with UID 'user_abc' can create a session under their profile.
+     * @allow (get) - User with UID 'user_abc' can read a session under their profile.
+     * @allow (list) - User with UID 'user_abc' can list sessions under their profile.
+     * @allow (update) - User with UID 'user_abc' can update a session under their profile.
+     * @allow (delete) - User with UID 'user_abc' can delete a session under their profile.
+     * @deny (create) - User with UID 'user_xyz' cannot create a session for 'user_abc'.
+     * @deny (get) - User with UID 'user_xyz' cannot read a session of 'user_abc'.
+     * @deny (update) - User with UID 'user_xyz' cannot update a session of 'user_abc'.
+     * @deny (delete) - User with UID 'user_xyz' cannot delete a session of 'user_abc'.
+     * @principle Enforces document ownership for all operations within the user's data tree.
+     */
+    match /users/{userId}/mockInterviewSessions/{sessionId} {
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isOwner(userId) && request.resource.data.userId == userId;
+      allow update: if isExistingOwner(userId) && request.resource.data.userId == resource.data.userId;
+      allow delete: if isExistingOwner(userId);
+    }
+  }
+}
