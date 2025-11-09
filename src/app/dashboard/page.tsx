@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { BookOpen, ChevronRight, History, TrendingUp, Users } from 'lucide-react';
+import { BookOpen, ChevronRight, History, Plus, TrendingUp, Users } from 'lucide-react';
 import Link from 'next/link';
 import { format } from 'date-fns';
 import type { ChartConfig } from '@/components/ui/chart';
@@ -92,6 +92,14 @@ export default function DashboardPage() {
     <div className="flex-1 space-y-4">
         <div className="flex items-center justify-between space-y-2">
             <h1 className="text-3xl font-bold tracking-tight text-foreground">Dashboard</h1>
+            <div className="flex items-center space-x-2">
+                <Button asChild>
+                    <Link href="/">
+                        <Plus className="mr-2 h-4 w-4" />
+                        New Interview
+                    </Link>
+                </Button>
+            </div>
         </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
