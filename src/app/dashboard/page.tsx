@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { BarChart, BookOpen, ChevronRight, History, TrendingUp, Users } from 'lucide-react';
+import { BookOpen, ChevronRight, History, TrendingUp, Users } from 'lucide-react';
 import Link from 'next/link';
 import { format } from 'date-fns';
 import type { ChartConfig } from '@/components/ui/chart';
@@ -11,12 +11,8 @@ import {
   ChartTooltipContent,
   ChartLegend,
   ChartLegendContent,
-  ChartXAxis,
-  ChartYAxis,
-  ChartBar,
 } from '@/components/ui/chart';
-import * as RechartsPrimitive from "recharts"
-
+import { Bar, BarChart, Cell, XAxis, YAxis } from 'recharts';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -130,7 +126,7 @@ export default function DashboardPage() {
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Best Specialty</CardTitle>
-                <BarChart className="h-4 w-4 text-muted-foreground" />
+                <Users className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                  <div className="text-2xl font-bold truncate">{specialtyScoreData.length > 0 ? specialtyScoreData.sort((a,b) => b.score - a.score)[0].specialty : 'N/A'}</div>
@@ -165,20 +161,20 @@ export default function DashboardPage() {
             ) : sessions.length > 0 ? (
               <ChartContainer config={scoreChartConfig} className="h-[250px] w-full">
                 <BarChart accessibilityLayer data={scoreChartData}>
-                  <ChartXAxis
+                  <XAxis
                     dataKey="date"
                     tickLine={false}
                     tickMargin={10}
                     axisLine={false}
                     tickFormatter={(value) => value}
                   />
-                  <ChartYAxis domain={[0, 10]} hide />
+                  <YAxis domain={[0, 10]} hide />
                   <ChartTooltip
                     cursor={false}
                     content={<ChartTooltipContent indicator="dot" />}
                   />
                   <ChartLegend content={<ChartLegendContent />} />
-                  <ChartBar dataKey="score" radius={4} fill="var(--color-score)" />
+                  <Bar dataKey="score" radius={4} fill="var(--color-score)" />
                 </BarChart>
               </ChartContainer>
             ) : (
@@ -200,7 +196,7 @@ export default function DashboardPage() {
                 ) : specialtyScoreData.length > 0 ? (
                     <ChartContainer config={specialtyChartConfig} className="h-[250px] w-full">
                         <BarChart accessibilityLayer data={specialtyScoreData} layout="vertical">
-                            <ChartYAxis
+                            <YAxis
                                 dataKey="specialty"
                                 type="category"
                                 tickLine={false}
@@ -209,16 +205,16 @@ export default function DashboardPage() {
                                 className="w-24"
                                 tickFormatter={(value) => value.length > 15 ? `${value.substring(0, 15)}...` : value}
                             />
-                            <ChartXAxis type="number" domain={[0, 10]} hide />
+                            <XAxis type="number" domain={[0, 10]} hide />
                             <ChartTooltip
                                 cursor={false}
                                 content={<ChartTooltipContent indicator="line" />}
                             />
-                            <ChartBar dataKey="score" layout="vertical" radius={4}>
+                            <Bar dataKey="score" layout="vertical" radius={4}>
                                 {specialtyScoreData.map((entry) => (
-                                    <RechartsPrimitive.Cell key={entry.specialty} fill={specialtyChartConfig[entry.specialty]?.color || 'hsl(var(--primary))'} />
+                                    <Cell key={entry.specialty} fill={specialtyChartConfig[entry.specialty]?.color || 'hsl(var(--primary))'} />
                                 ))}
-                            </ChartBar>
+                            </Bar>
                         </BarChart>
                     </ChartContainer>
                 ) : (
@@ -300,3 +296,5 @@ export default function DashboardPage() {
     </div>
   );
 }
+
+    
