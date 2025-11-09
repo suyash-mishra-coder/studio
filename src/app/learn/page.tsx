@@ -3,6 +3,7 @@
 
 import * as React from 'react';
 import { BookOpen, Youtube, Newspaper } from 'lucide-react';
+import { motion } from 'framer-motion';
 import {
   Card,
   CardContent,
@@ -94,12 +95,17 @@ function ResourceLink({ title, url, level }: { title: string; url: string; level
 export default function LearningHubPage() {
   return (
     <div className="container mx-auto max-w-5xl py-12 px-4">
-      <header className="mb-12 text-center animate-fade-in-up">
+      <motion.header 
+        className="mb-12 text-center"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
         <h1 className="font-headline text-4xl font-bold text-foreground">Learning Hub</h1>
         <p className="text-muted-foreground mt-2 max-w-2xl mx-auto">
           Curated articles and videos to help you master key concepts and prepare for your interviews.
         </p>
-      </header>
+      </motion.header>
 
       <div className="space-y-8">
         {(Object.keys(learningResources) as (keyof typeof learningResources)[]).map((specialty, index) => (

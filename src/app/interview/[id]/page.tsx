@@ -14,6 +14,7 @@ import { PlaceHolderImages } from '@/lib/placeholder-images';
 import type { InterviewTranscriptItem } from '@/lib/types';
 import { saveSession } from '@/lib/data';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { motion } from 'framer-motion';
 
 const INTERVIEW_DURATION_MIN = 45;
 
@@ -268,31 +269,48 @@ export default function InterviewPage() {
 
   return (
     <div className="container mx-auto p-4 flex flex-col h-[calc(100vh-8rem)]">
-      <header className="mb-4">
-        <Progress value={progress} className="w-full animate-in" />
+      <motion.header
+        className="mb-4"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <Progress value={progress} className="w-full" />
         <div className="flex justify-between items-center mt-2 text-sm text-muted-foreground">
           <span>Question {currentQuestionIndex + 1} of {questions.length}</span>
           <InterviewTimer onFinish={() => finishInterview(userAnswer)} />
         </div>
-      </header>
+      </motion.header>
 
       <div className="flex-1 flex flex-col gap-4 overflow-y-auto">
-        <Card className="flex-shrink-0 shadow-lg animate-fade-in-up">
-          <CardContent className="p-6">
-            <div className="flex items-start gap-4">
-              <Avatar>
-                <AvatarImage data-ai-hint={aiAvatar?.imageHint} src={aiAvatar?.imageUrl} />
-                <AvatarFallback><Bot /></AvatarFallback>
-              </Avatar>
-              <div>
-                <h2 className="font-bold text-primary">AI Interviewer</h2>
-                <p className="text-lg mt-2 font-medium">{questions[currentQuestionIndex]}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <motion.div
+          key={currentQuestionIndex}
+          initial={{ opacity: 0, x: -50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5, ease: 'easeOut' }}
+        >
+            <Card className="flex-shrink-0 shadow-lg">
+            <CardContent className="p-6">
+                <div className="flex items-start gap-4">
+                <Avatar>
+                    <AvatarImage data-ai-hint={aiAvatar?.imageHint} src={aiAvatar?.imageUrl} />
+                    <AvatarFallback><Bot /></AvatarFallback>
+                </Avatar>
+                <div>
+                    <h2 className="font-bold text-primary">AI Interviewer</h2>
+                    <p className="text-lg mt-2 font-medium">{questions[currentQuestionIndex]}</p>
+                </div>
+                </div>
+            </CardContent>
+            </Card>
+        </motion.div>
         
-        <div className="flex-1 flex flex-col min-h-[250px] animate-fade-in-up" style={{animationDelay: '0.2s'}}>
+        <motion.div 
+            className="flex-1 flex flex-col min-h-[250px]"
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease: 'easeOut' }}
+        >
           <label htmlFor="code-editor" className="font-medium mb-2 flex items-center gap-2"><Code2 className="h-5 w-5 text-primary"/> Your Answer</label>
            { hasMicPermission === false && (
                 <Alert variant="destructive" className="mb-4">
@@ -310,7 +328,7 @@ export default function InterviewPage() {
             onChange={(e) => setUserAnswer(e.target.value)}
             className="flex-1 font-mono text-sm shadow-inner bg-background/80"
           />
-        </div>
+        </motion.div>
 
         <div className="mt-auto pt-4">
           {isFinishing ? (

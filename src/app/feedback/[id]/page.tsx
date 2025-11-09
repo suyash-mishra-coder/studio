@@ -41,8 +41,8 @@ function ScoreCircle({ score }: { score: number }) {
           r="45"
           fill="transparent"
         />
-        <circle
-          className={`stroke-current ${colorClass} transition-all duration-1000 ease-in-out`}
+        <motion.circle
+          className={`stroke-current ${colorClass}`}
           strokeWidth="10"
           strokeDasharray={circumference}
           strokeDashoffset={offset}
@@ -52,6 +52,9 @@ function ScoreCircle({ score }: { score: number }) {
           r="45"
           fill="transparent"
           transform="rotate(-90 50 50)"
+          initial={{ strokeDashoffset: circumference }}
+          animate={{ strokeDashoffset: offset }}
+          transition={{ duration: 1, ease: "easeOut" }}
         />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
@@ -128,17 +131,26 @@ export default function FeedbackPage() {
 
   return (
     <div className="container mx-auto max-w-5xl py-8 px-4">
-      <header className="mb-8 animate-fade-in-up">
+      <motion.header
+        className="mb-8"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
         <h1 className="font-headline text-4xl font-bold text-foreground">Performance Autopsy</h1>
         <div className="flex items-center gap-4 mt-2 text-muted-foreground">
           <Badge variant="secondary">{session.role}</Badge>
           <Separator orientation="vertical" className="h-4"/>
           <div className="flex items-center gap-2"><Clock className="h-4 w-4"/><span>{format(new Date(session.date), 'MMMM d, yyyy')}</span></div>
         </div>
-      </header>
+      </motion.header>
       
       <div className="grid md:grid-cols-3 gap-8">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.1 }}>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+        >
             <Card className="md:col-span-1 flex flex-col items-center justify-center text-center p-6">
                 <CardHeader>
                     <CardTitle>Your Score</CardTitle>
@@ -176,7 +188,7 @@ export default function FeedbackPage() {
                 <p className="text-muted-foreground whitespace-pre-wrap">{feedback.strengths}</p>
                 </CardContent>
             </Card>
-          </motion.div>
+           </motion.div>
 
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.4 }}>
             <Card>

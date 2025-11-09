@@ -92,77 +92,75 @@ export default function SignUpPage() {
 
   return (
     <div className="flex flex-col min-h-screen items-center justify-center p-4 md:p-8 bg-muted/40">
-      <div className="w-full max-w-md">
-        <motion.div
-          key="signup-form"
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.4, ease: 'easeOut' }}
-        >
-          <Card>
-            <CardHeader className="text-center">
-              <CardTitle className="text-3xl font-headline">Create Your Account</CardTitle>
-              <CardDescription>
-                Join Mockview AI and start acing your interviews.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                  <FormField
-                    control={form.control}
-                    name="name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Full Name</FormLabel>
-                        <FormControl>
-                          <Input placeholder="John Doe" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Email Address</FormLabel>
-                        <FormControl>
-                          <Input type="email" placeholder="you@example.com" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="password"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Password</FormLabel>
-                        <FormControl>
-                          <Input type="password" placeholder="••••••••" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <Button type="submit" size="lg" className="w-full" disabled={formState.isSubmitting}>
-                    {formState.isSubmitting ? 'Creating Account...' : 'Sign Up'}
-                  </Button>
-                </form>
-              </Form>
-              <p className="mt-6 text-center text-sm text-muted-foreground">
-                Already have an account?{' '}
-                <Link href="/login" className="font-semibold text-primary hover:underline">
-                  Log in
-                </Link>
-              </p>
-            </CardContent>
-          </Card>
-        </motion.div>
-      </div>
+      <motion.div
+        className="w-full max-w-md"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <Card>
+          <CardHeader className="text-center">
+            <CardTitle className="text-3xl font-headline">Create Your Account</CardTitle>
+            <CardDescription>
+              Join Mockview AI and start acing your interviews.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Full Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="John Doe" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email Address</FormLabel>
+                      <FormControl>
+                        <Input type="email" placeholder="you@example.com" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Password</FormLabel>
+                      <FormControl>
+                        <Input type="password" placeholder="••••••••" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <Button type="submit" size="lg" className="w-full" disabled={formState.isSubmitting}>
+                  {formState.isSubmitting ? 'Creating Account...' : 'Sign Up'}
+                </Button>
+              </form>
+            </Form>
+            <p className="mt-6 text-center text-sm text-muted-foreground">
+              Already have an account?{' '}
+              <Link href="/login" className="font-semibold text-primary hover:underline">
+                Log in
+              </Link>
+            </p>
+          </CardContent>
+        </Card>
+      </motion.div>
     </div>
   );
 }

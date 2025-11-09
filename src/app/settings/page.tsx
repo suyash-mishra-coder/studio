@@ -2,12 +2,11 @@
 'use client';
 
 import * as React from 'react';
-import { User, Bell, Palette, Shield, CreditCard, Upload, MonitorSmartphone } from 'lucide-react';
+import { User, Bell, Palette, Shield, CreditCard, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
@@ -65,10 +64,15 @@ export default function SettingsPage() {
 
     return (
         <div className="container mx-auto max-w-4xl py-12 px-4">
-            <header className="mb-10 animate-fade-in-up">
+            <motion.header 
+                className="mb-10"
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+            >
                 <h1 className="font-headline text-4xl font-bold text-foreground">Settings</h1>
                 <p className="text-muted-foreground mt-2">Manage your account and preferences.</p>
-            </header>
+            </motion.header>
 
             <div className="space-y-8">
                 <SettingsSection title="Profile" description="Update your personal information." icon={User} delay={0.1}>
@@ -147,9 +151,14 @@ export default function SettingsPage() {
                     </div>
                 </SettingsSection>
                 
-                <div className="flex justify-end pt-4 animate-fade-in-up" style={{ animationDelay: '0.6s' }}>
+                <motion.div 
+                    className="flex justify-end pt-4"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.6 }}
+                >
                     <Button size="lg" onClick={handleSaveChanges}>Save Changes</Button>
-                </div>
+                </motion.div>
             </div>
         </div>
     );

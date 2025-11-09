@@ -91,9 +91,9 @@ export default function Home() {
           </nav>
       </header>
 
-      <div className="flex flex-col flex-1 items-center justify-center p-4 md:p-8 bg-background">
+      <main className="flex flex-col flex-1 items-center justify-center p-4 md:p-8 bg-background">
         <div className="w-full max-w-lg">
-          <header className="text-center mb-10 animate-fade-in-up">
+          <header className="text-center mb-10">
             <motion.h1 
               className="font-headline text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-purple-400"
               initial={{ opacity: 0, y: -20 }}
@@ -199,7 +199,7 @@ export default function Home() {
             )}
           </AnimatePresence>
         </div>
-      </div>
+      </main>
       <Footer />
     </div>
   );
