@@ -92,7 +92,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </SidebarMenu>
         </SidebarFooter>
       </Sidebar>
-      <div className="flex flex-col flex-1 pl-0 sm:pl-14">
+      <div className="flex flex-col flex-1 pl-14">
         <Header />
         <main className="flex-1 p-4 sm:px-6 sm:py-4 md:gap-8">
             {children}
