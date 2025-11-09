@@ -1,18 +1,18 @@
-
-
 'use client';
 
 import * as React from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { BookOpen, LayoutDashboard, Settings, User } from 'lucide-react';
+import { usePathname, useRouter } from 'next/navigation';
+import { BookOpen, LayoutDashboard, Settings, User, LogOut } from 'lucide-react';
 import { Logo } from '@/components/icons';
 import Header from '@/components/layout/header';
-import { Sidebar, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarHeader, SidebarFooter, SidebarInset } from '@/components/ui/sidebar';
+import { Sidebar, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarHeader, SidebarFooter } from '@/components/ui/sidebar';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Separator } from '@/components/ui/separator';
 import Footer from '@/components/layout/footer';
+import { useAuth, useUser } from '@/firebase';
+import { signOut } from 'firebase/auth';
 
 const navLinks = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -22,8 +22,29 @@ const navLinks = [
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
+  const { user, isUserLoading } = useUser();
+  const auth = useAuth();
+  
   const userAvatar = PlaceHolderImages.find(p => p.id === 'user-avatar');
-  const userName = "Suyash Mishra";
+  const userName = user?.displayName || user?.email || 'Anonymous';
+  const userEmail = user?.email || 'No email';
+  
+  React.useEffect(() => {
+    if (!isUserLoading && !user) {
+      router.push('/login');
+    }
+  }, [user, isUserLoading, router]);
+
+  if (isUserLoading || !user) {
+      return <div className="flex h-screen items-center justify-center">Loading...</div>;
+  }
+
+  const handleLogout = async () => {
+    await signOut(auth);
+    router.push('/');
+  };
+
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-muted/40">
@@ -60,13 +81,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
              <div className="p-2 group-data-[collapsible=icon]:p-0 group-data-[collapsible=icon]:-translate-x-1">
                 <div className="flex items-center gap-3 p-2 rounded-md group-data-[collapsible=icon]:p-0 group-data-[collapsible=icon]:justify-center">
                     <Avatar className="h-8 w-8">
-                      <AvatarImage data-ai-hint={userAvatar?.imageHint} src={userAvatar?.imageUrl} alt={userName} />
+                      <AvatarImage data-ai-hint={userAvatar?.imageHint} src={user?.photoURL || userAvatar?.imageUrl} alt={userName} />
                       <AvatarFallback>{userName.charAt(0)}</AvatarFallback>
                     </Avatar>
                     <div className="flex flex-col overflow-hidden group-data-[collapsible=icon]:hidden">
                         <p className="text-sm font-medium leading-none truncate">{userName}</p>
                         <p className="text-xs leading-none text-muted-foreground truncate">
-                            suyash.mishra@example.com
+                            {userEmail}
                         </p>
                     </div>
                 </div>
@@ -88,16 +109,28 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                         </Link>
                     </SidebarMenuButton>
                 </SidebarMenuItem>
+                 <SidebarMenuItem>
+                    <SidebarMenuButton
+                        onClick={handleLogout}
+                        tooltip={{
+                            children: "Logout",
+                            side: "right",
+                        }}
+                    >
+                        <LogOut/>
+                        <span>Logout</span>
+                    </SidebarMenuButton>
+                </SidebarMenuItem>
             </SidebarMenu>
         </SidebarFooter>
       </Sidebar>
-      <SidebarInset>
+      <main className="flex-1 transition-all duration-300 ease-in-out md:pl-[--sidebar-width-icon] group-data-[state=expanded]/sidebar-wrapper:md:pl-[--sidebar-width]">
         <Header />
-        <main className="flex-1 p-4 sm:px-6 sm:py-4 md:gap-8">
+        <div className="flex-1 p-4 sm:px-6 sm:py-4 md:gap-8">
             {children}
-        </main>
+        </div>
         <Footer />
-      </SidebarInset>
+      </main>
     </div>
   );
 }
