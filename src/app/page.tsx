@@ -184,7 +184,7 @@ export default function Home() {
         <div className="w-full max-w-lg">
           <header className="text-center mb-10 animate-fade-in-up">
             <motion.h1 
-              className="font-headline text-4xl md:text-5xl font-bold text-foreground"
+              className="font-headline text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent"
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
