@@ -1,174 +1,25 @@
-
 'use client';
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { EXPERIENCE_LEVELS, SPECIALTIES } from '@/lib/constants';
 import Footer from '@/components/layout/footer';
 import { useUser } from '@/firebase';
-import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-
-const formSchema = z.object({
-  name: z.string().min(2, { message: 'Please enter your name.' }),
-  role: z.string().min(2, { message: 'Role must be at least 2 characters.' }),
-  experienceLevel: z.string({ required_error: 'Please select an experience level.' }),
-  specialty: z.string({ required_error: 'Please select a specialty.' }),
-  topic: z.string().min(2, { message: 'Topic must be at least 2 characters.' }),
-  targetCompany: z.string().optional(),
-});
-
-type FormValues = z.infer<typeof formSchema>;
+import { Input } from '@/components/ui/input';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { PreInterviewForm, type FormValues } from '@/components/PreInterviewForm';
 
 const MAX_FREE_TRIALS = 3;
-
-function PreInterviewForm({ name, onStart }: { name: string; onStart: (values: FormValues) => void }) {
-  const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: name,
-      role: '',
-      topic: '',
-      targetCompany: '',
-    },
-  });
-
-  const { formState } = form;
-
-  return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onStart)} className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <FormField
-            control={form.control}
-            name="role"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Your Role</FormLabel>
-                <FormControl>
-                  <Input placeholder="e.g., Software Engineer" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="experienceLevel"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Experience Level</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select your experience" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {EXPERIENCE_LEVELS.map((level) => (
-                      <SelectItem key={level} value={level}>
-                        {level}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-
-        <FormField
-          control={form.control}
-          name="specialty"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Technical Specialty</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select your specialty" />
-                  </Trigger>
-                </FormControl>
-                <SelectContent>
-                  {SPECIALTIES.map((specialty) => (
-                    <SelectItem key={specialty} value={specialty}>
-                      {specialty}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <FormField
-            control={form.control}
-            name="topic"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Interview Topic</FormLabel>
-                <FormControl>
-                  <Input placeholder="e.g., Data Structures" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="targetCompany"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Target Company (Optional)</FormLabel>
-                <FormControl>
-                  <Input placeholder="e.g., Google" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-
-        <Button type="submit" size="lg" className="w-full" disabled={formState.isSubmitting}>
-          {formState.isSubmitting ? 'Starting...' : 'Start Your Mock Interview'}
-        </Button>
-      </form>
-    </Form>
-  );
-}
 
 export default function Home() {
   const router = useRouter();
   const { user, isUserLoading } = useUser();
-  const { toast } = useToast();
   
   const [step, setStep] = React.useState(0);
   const [name, setName] = React.useState('');
@@ -241,7 +92,7 @@ export default function Home() {
         <div className="w-full max-w-lg">
           <header className="text-center mb-10 animate-fade-in-up">
             <motion.h1 
-              className="font-headline text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent"
+              className="font-headline text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-purple-400"
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
