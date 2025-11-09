@@ -144,7 +144,7 @@ export function PreInterviewForm({ onStart }: { onStart: (values: FormValues) =>
         </div>
 
         <Button type="submit" size="lg" className="w-full" disabled={formState.isSubmitting}>
-          {formState.isSubmitting ? 'Starting...' : 'Start The Gauntlet'}
+          {formState.isSubmitting ? 'Starting...' : 'Start Interview'}
         </Button>
       </form>
     </Form>

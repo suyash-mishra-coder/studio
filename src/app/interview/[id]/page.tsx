@@ -86,16 +86,16 @@ export default function InterviewPage() {
         setQuestions(response.questions);
       } catch (error) {
         toast({
-          title: "Couldn't get AI questions",
-          description: "Using generic questions. Don't mess these up.",
+          title: "Couldn't generate AI questions",
+          description: "Using fallback questions for now.",
           variant: "destructive",
         });
         setQuestions([
-          'What makes you think you are qualified for this role?',
-          'Explain a complex topic as if I have no patience.',
-          'Describe a failure and why it was your fault.',
-          'Justify your salary expectations.',
-          'Why shouldn\'t we hire you?',
+          'Tell me about a challenging project you worked on.',
+          'Explain a complex technical concept to a non-technical person.',
+          'How do you handle disagreements with your team members?',
+          'Where do you see yourself in 5 years?',
+          'What are your salary expectations?',
         ]);
       } finally {
         setLoading(false);
@@ -136,7 +136,7 @@ export default function InterviewPage() {
           toast({
               variant: 'destructive',
               title: 'Microphone Not Working',
-              description: 'Permission denied or no speech detected. Check your settings.',
+              description: 'Permission denied or no speech detected. Please check your settings.',
           });
         }
       };
@@ -152,7 +152,7 @@ export default function InterviewPage() {
     if (!recognitionRef.current) {
         toast({
             title: "Voice Not Supported",
-            description: "Your browser is too old or unsupported for speech recognition.",
+            description: "Your browser doesn't support speech recognition.",
             variant: "destructive"
         });
         return;
@@ -173,7 +173,7 @@ export default function InterviewPage() {
              toast({
                 variant: 'destructive',
                 title: 'Microphone Access Denied',
-                description: 'You denied microphone access. You have to type now.',
+                description: 'Please enable microphone access in your browser settings.',
             });
         }
     }
@@ -205,8 +205,8 @@ export default function InterviewPage() {
       const sessionId = await saveSession(configToSave as any, finalTranscript);
       
       toast({
-        title: "Interview Over.",
-        description: "Redirecting to your feedback.",
+        title: "Interview Complete!",
+        description: "Redirecting to your feedback report.",
       });
 
       setTimeout(() => {
@@ -216,8 +216,8 @@ export default function InterviewPage() {
     } catch (error) {
       console.error("Failed to save session:", error);
       toast({
-        title: "Save Failed",
-        description: "Couldn't save your session. Try again if you want.",
+        title: "Failed to Save Session",
+        description: "Your interview data could not be saved. Please try again.",
         variant: "destructive",
       });
       setIsFinishing(false);
@@ -229,8 +229,8 @@ export default function InterviewPage() {
     const currentAnswer = userAnswer;
     if (!currentAnswer.trim()) {
       toast({
-        title: "No answer provided.",
-        description: "You have to actually answer the question.",
+        title: "Please provide an answer.",
+        description: "You can't skip questions in a real interview!",
         variant: "destructive",
       });
       return;
@@ -259,7 +259,7 @@ export default function InterviewPage() {
       <div className="flex h-screen items-center justify-center">
         <div className="flex flex-col items-center gap-4">
           <Loader className="h-12 w-12 animate-spin text-primary" />
-          <p className="text-muted-foreground">Preparing questions...</p>
+          <p className="text-muted-foreground">Preparing your interview...</p>
         </div>
       </div>
     );
@@ -317,7 +317,7 @@ export default function InterviewPage() {
                   <MicOff className="h-4 w-4" />
                   <AlertTitle>Microphone Not Available</AlertTitle>
                   <AlertDescription>
-                    Speech recognition is off. You need to type.
+                    Speech recognition is disabled. Please type your answer.
                   </AlertDescription>
                 </Alert>
            )}
@@ -342,7 +342,7 @@ export default function InterviewPage() {
                  <Button size="icon" variant={isRecording ? 'destructive' : 'outline'} onClick={toggleRecording}>
                     {isRecording ? <Radio className="h-5 w-5 animate-pulse"/> : <Mic className="h-5 w-5"/>}
                  </Button>
-                 <p className="text-sm text-muted-foreground">{isRecording ? 'Listening...' : 'Voice Input'}</p>
+                 <p className="text-sm text-muted-foreground">{isRecording ? 'Recording...' : 'Voice Input'}</p>
               </div>
               <Button size="lg" onClick={handleNextQuestion} className="w-1/2">
                 {currentQuestionIndex < questions.length - 1 ? (
@@ -353,7 +353,7 @@ export default function InterviewPage() {
                 ) : (
                   <>
                     <CheckCircle className="mr-2 h-4 w-4" />
-                    Finish & Get Judged
+                    Finish & Get Feedback
                   </>
                 )}
               </Button>

@@ -27,8 +27,8 @@ function ScoreCircle({ score }: { score: number }) {
 
 
   let colorClass = 'text-primary';
-  if (score < 5) colorClass = 'text-yellow-500';
-  if (score < 3) colorClass = 'text-destructive';
+  if (score < 7) colorClass = 'text-yellow-500';
+  if (score < 4) colorClass = 'text-destructive';
 
   return (
     <div className="relative h-40 w-40">
@@ -118,15 +118,15 @@ export default function FeedbackPage() {
         <div className="flex h-screen items-center justify-center">
             <div className="flex flex-col items-center gap-4 text-center">
                 <Loader className="h-12 w-12 animate-spin text-primary" />
-                <h2 className="text-2xl font-semibold">Analyzing Your Failures...</h2>
-                <p className="text-muted-foreground max-w-md">Our AI is picking apart your performance to provide brutally honest feedback. This might sting.</p>
+                <h2 className="text-2xl font-semibold">Generating Your Feedback...</h2>
+                <p className="text-muted-foreground max-w-md">Our AI is analyzing your interview to provide personalized feedback. This may take a moment.</p>
             </div>
         </div>
     );
   }
 
   if (!feedback || !session) {
-    return <div className="flex h-screen items-center justify-center"><p>Feedback not found. Or you don't deserve it.</p></div>;
+    return <div className="flex h-screen items-center justify-center"><p>Feedback not found for this session.</p></div>;
   }
 
   return (
@@ -137,7 +137,7 @@ export default function FeedbackPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <h1 className="font-headline text-4xl font-bold text-foreground">Performance Autopsy</h1>
+        <h1 className="font-headline text-4xl font-bold text-foreground">Interview Report</h1>
         <div className="flex items-center gap-4 mt-2 text-muted-foreground">
           <Badge variant="secondary">{session.role}</Badge>
           <Separator orientation="vertical" className="h-4"/>
@@ -147,27 +147,39 @@ export default function FeedbackPage() {
       
       <div className="grid md:grid-cols-3 gap-8">
         <motion.div
+          className="md:col-span-1 flex flex-col gap-8"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
         >
-            <Card className="md:col-span-1 flex flex-col items-center justify-center text-center p-6">
+            <Card className="flex flex-col items-center justify-center text-center p-6">
                 <CardHeader>
-                    <CardTitle>Your Score</CardTitle>
+                    <CardTitle>Overall Score</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <ScoreCircle score={feedback.score} />
                 </CardContent>
             </Card>
+            <Card>
+                <CardHeader>
+                <div className="flex items-center gap-3">
+                    <ThumbsUp className="h-6 w-6 text-green-500" />
+                    <CardTitle>Strengths</CardTitle>
+                </div>
+                </CardHeader>
+                <CardContent>
+                <p className="text-muted-foreground whitespace-pre-wrap">{feedback.strengths}</p>
+                </CardContent>
+           </Card>
         </motion.div>
 
         <div className="md:col-span-2 space-y-8">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.3 }}>
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.2 }}>
             <Card>
                 <CardHeader>
                 <div className="flex items-center gap-3">
                     <ThumbsDown className="h-6 w-6 text-destructive" />
-                    <CardTitle className="text-destructive">What You Got Wrong</CardTitle>
+                    <CardTitle>Areas for Improvement</CardTitle>
                 </div>
                 </CardHeader>
                 <CardContent>
@@ -176,26 +188,13 @@ export default function FeedbackPage() {
             </Card>
           </motion.div>
           
-           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.2 }}>
-            <Card>
-                <CardHeader>
-                <div className="flex items-center gap-3">
-                    <ThumbsUp className="h-6 w-6 text-green-500" />
-                    <CardTitle className="text-green-500">What You Didn't Mess Up</CardTitle>
-                </div>
-                </CardHeader>
-                <CardContent>
-                <p className="text-muted-foreground whitespace-pre-wrap">{feedback.strengths}</p>
-                </CardContent>
-            </Card>
-           </motion.div>
 
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.4 }}>
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.3 }}>
             <Card>
                 <CardHeader>
                 <div className="flex items-center gap-3">
                     <MessageCircle className="h-6 w-6 text-blue-500" />
-                    <CardTitle className="text-blue-500">How You Sounded</CardTitle>
+                    <CardTitle>Communication Style</CardTitle>
                 </div>
                 </CardHeader>
                 <CardContent>
@@ -204,12 +203,12 @@ export default function FeedbackPage() {
             </Card>
           </motion.div>
 
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.5 }}>
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.4 }}>
             <Card>
                 <CardHeader>
                 <div className="flex items-center gap-3">
                     <Sparkles className="h-6 w-6 text-primary" />
-                    <CardTitle className="text-primary">How to Be Less Bad</CardTitle>
+                    <CardTitle>Actionable Tips</CardTitle>
                 </div>
                 </CardHeader>
                 <CardContent>
@@ -224,14 +223,14 @@ export default function FeedbackPage() {
         </div>
       </div>
       
-      <motion.div className="mt-12" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.6 }}>
+      <motion.div className="mt-12" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.5 }}>
         <Card>
           <CardHeader>
             <div className="flex items-center gap-3">
               <BookOpen className="h-6 w-6 text-primary" />
               <CardTitle>Interview Transcript</CardTitle>
             </div>
-            <CardDescription>The full record of your conversation. Read it and learn.</CardDescription>
+            <CardDescription>A full record of your conversation with the AI interviewer.</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-6 max-h-96 overflow-y-auto p-4 border rounded-md bg-muted/50">

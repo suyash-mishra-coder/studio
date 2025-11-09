@@ -95,7 +95,7 @@ export default function Home() {
         <div className="w-full max-w-lg">
           <header className="text-center mb-10">
             <motion.h1 
-              className="font-headline text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-purple-400"
+              className="font-headline text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-400"
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
@@ -108,7 +108,7 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
             >
-              Stop failing interviews. Get brutally honest feedback and fix your flaws.
+              Ace your technical interviews with AI-powered feedback and practice.
             </motion.p>
           </header>
 
@@ -122,9 +122,9 @@ export default function Home() {
                 transition={{ duration: 0.3 }}
               >
                 <Alert>
-                  <AlertTitle className="font-bold">Free Rides Are Over</AlertTitle>
+                  <AlertTitle className="font-bold">Free Trial Ended</AlertTitle>
                   <AlertDescription>
-                    You've used your 3 free interviews. No more practice until you sign up.
+                    You've used all your free interviews. Sign up to continue practicing.
                   </AlertDescription>
                   <div className="flex gap-4 mt-4">
                     <Button className="w-full" asChild>
@@ -148,7 +148,7 @@ export default function Home() {
                 className="text-center"
               >
                 <Button size="lg" className="text-lg px-8 py-6" onClick={handleStart}>
-                  Start Interview ({MAX_FREE_TRIALS - trialsUsed} free attempts left)
+                  Start Free Interview ({MAX_FREE_TRIALS - trialsUsed} left)
                 </Button>
               </motion.div>
             )}
@@ -162,7 +162,7 @@ export default function Home() {
                   transition={{ duration: 0.3 }}
                   className="text-center"
               >
-                  <h2 className="text-2xl font-semibold mb-4">What's your name?</h2>
+                  <h2 className="text-2xl font-semibold mb-4">First, what should we call you?</h2>
                   <form onSubmit={handleNameSubmit} className="flex gap-2">
                       <Input 
                           type="text"
@@ -186,9 +186,9 @@ export default function Home() {
               >
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-2xl font-headline">Interview Setup, {name}</CardTitle>
+                    <CardTitle className="text-2xl font-headline">Welcome, {name}!</CardTitle>
                     <CardDescription>
-                      Configure the interview. Try to pick something you're good at.
+                      Let's set up your mock interview. Choose your role and topic.
                     </CardDescription>
                   </CardHeader>
                   <CardContent>

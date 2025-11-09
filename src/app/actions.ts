@@ -11,11 +11,11 @@ export async function getInterviewQuestions(input: GenerateInterviewQuestionsInp
     console.error('Error generating interview questions:', error);
     // Return a fallback or throw a more specific error
     return { questions: [
-        'What makes you think you are qualified for this role?',
-        'Explain a complex topic as if I have no patience.',
-        'Describe a failure and why it was your fault.',
-        'Justify your salary expectations.',
-        'Why shouldn\'t we hire you?',
+        'Tell me about a challenging project you worked on.',
+        'Explain a complex technical concept to a non-technical person.',
+        'How do you handle disagreements with your team members?',
+        'Where do you see yourself in 5 years?',
+        'What are your salary expectations?',
       ]
     };
   }
@@ -29,11 +29,11 @@ export async function getPersonalizedFeedback(input: ProvidePersonalizedFeedback
     console.error('Error providing personalized feedback:', error);
     // Return a fallback or throw a more specific error
     return {
-      score: 2,
-      strengths: 'You showed up. That\'s about it.',
-      weaknesses: 'Your answers were vague and lacked any real substance. It\'s clear you haven\'t prepared.',
-      communicationAnalysis: 'You ramble. You use "um" and "like" as a crutch. It was painful to listen to.',
-      improvementTips: '1. Study the basics. You lack them. 2. Record yourself and notice how many filler words you use. 3. Don\'t book another interview until you\'ve done the first two things.',
+      score: 5,
+      strengths: 'Good effort on the interview. You showed a willingness to tackle tough questions.',
+      weaknesses: 'Some answers could have been more structured. It seems there are some gaps in foundational knowledge in certain areas.',
+      communicationAnalysis: 'Communication was generally clear, but sometimes you seemed unsure. Try to project more confidence in your answers.',
+      improvementTips: '1. Review the fundamentals of your specialty. 2. Practice explaining your thought process out loud. 3. Use the STAR method for behavioral questions.',
     };
   }
 }
