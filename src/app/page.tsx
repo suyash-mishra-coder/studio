@@ -60,8 +60,11 @@ export default function Home() {
       localStorage.setItem('mockview-trials-used', newTrialCount.toString());
       setTrialsUsed(newTrialCount);
 
-      const params = new URLSearchParams(values as Record<string, string>).toString();
-      router.push(`/interview/new-interview-123?${params}`);
+      const params = new URLSearchParams({
+        ...values,
+        name,
+      });
+      router.push(`/interview/new-interview-123?${params.toString()}`);
     } else {
       setShowTrialEnded(true);
     }
@@ -105,7 +108,7 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
             >
-              Ace your next tech interview with our AI-powered real-time simulation platform.
+              Stop failing interviews. Get brutally honest feedback and fix your flaws.
             </motion.p>
           </header>
 
@@ -119,9 +122,9 @@ export default function Home() {
                 transition={{ duration: 0.3 }}
               >
                 <Alert>
-                  <AlertTitle className="font-bold">Free Trial Ended</AlertTitle>
+                  <AlertTitle className="font-bold">Free Rides Are Over</AlertTitle>
                   <AlertDescription>
-                    You've used all your free interviews. Please sign up to continue practicing and unlock unlimited sessions.
+                    You've used your 3 free interviews. No more practice until you sign up.
                   </AlertDescription>
                   <div className="flex gap-4 mt-4">
                     <Button className="w-full" asChild>
@@ -145,7 +148,7 @@ export default function Home() {
                 className="text-center"
               >
                 <Button size="lg" className="text-lg px-8 py-6" onClick={handleStart}>
-                  Get Started ({MAX_FREE_TRIALS - trialsUsed} trials left)
+                  Start Interview ({MAX_FREE_TRIALS - trialsUsed} free attempts left)
                 </Button>
               </motion.div>
             )}
@@ -159,7 +162,7 @@ export default function Home() {
                   transition={{ duration: 0.3 }}
                   className="text-center"
               >
-                  <h2 className="text-2xl font-semibold mb-4">Welcome! What should we call you?</h2>
+                  <h2 className="text-2xl font-semibold mb-4">What's your name?</h2>
                   <form onSubmit={handleNameSubmit} className="flex gap-2">
                       <Input 
                           type="text"
@@ -183,13 +186,13 @@ export default function Home() {
               >
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-2xl font-headline">Prepare Your Interview, {name}</CardTitle>
+                    <CardTitle className="text-2xl font-headline">Interview Setup, {name}</CardTitle>
                     <CardDescription>
-                      Configure your mock interview to match the role you're applying for.
+                      Configure the interview. Try to pick something you're good at.
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <PreInterviewForm name={name} onStart={handleStartInterview}/>
+                    <PreInterviewForm onStart={handleStartInterview}/>
                   </CardContent>
                 </Card>
               </motion.div>

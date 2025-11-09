@@ -61,22 +61,18 @@ export default function InterviewPage() {
   const recognitionRef = React.useRef<SpeechRecognition | null>(null);
 
   const aiAvatar = PlaceHolderImages.find(p => p.id === 'ai-avatar');
-  const userName = searchParams.get('name') || "User";
-
+  
   const interviewConfig = React.useMemo(() => {
     const config: Record<string, string> = {
-      role: searchParams.get('role') || "Software Engineer",
-      experienceLevel: searchParams.get('experienceLevel') || "Mid-level",
-      specialty: searchParams.get('specialty') || "Data Structures and Algorithms",
-      topic: searchParams.get('topic') || "Arrays and Hashing",
+      role: searchParams.get('role') || "Unspecified Role",
+      experienceLevel: searchParams.get('experienceLevel') || "Unknown",
+      specialty: searchParams.get('specialty') || "General",
+      topic: searchParams.get('topic') || "Anything",
+      name: searchParams.get('name') || "Candidate",
     };
     const targetCompany = searchParams.get('targetCompany');
     if (targetCompany) {
       config.targetCompany = targetCompany;
-    }
-    const name = searchParams.get('name');
-    if (name) {
-      config.name = name;
     }
     return config;
   }, [searchParams]);
@@ -89,14 +85,16 @@ export default function InterviewPage() {
         setQuestions(response.questions);
       } catch (error) {
         toast({
-          title: "Failed to load questions",
-          description: "Using fallback questions. You can proceed with the interview.",
+          title: "Couldn't get AI questions",
+          description: "Using generic questions. Don't mess these up.",
           variant: "destructive",
         });
         setQuestions([
-          'Could you tell me about a challenging project you worked on?',
-          'What are your biggest strengths and weaknesses?',
-          'Describe a time you had to learn a new technology quickly.'
+          'What makes you think you are qualified for this role?',
+          'Explain a complex topic as if I have no patience.',
+          'Describe a failure and why it was your fault.',
+          'Justify your salary expectations.',
+          'Why shouldn\'t we hire you?',
         ]);
       } finally {
         setLoading(false);
@@ -132,12 +130,12 @@ export default function InterviewPage() {
 
       recognition.onerror = (event) => {
         console.error('Speech recognition error', event.error);
-        if (event.error === 'not-allowed') {
+        if (event.error === 'not-allowed' || event.error === 'no-speech') {
           setHasMicPermission(false);
           toast({
               variant: 'destructive',
-              title: 'Microphone Access Denied',
-              description: 'Please enable microphone permissions in your browser settings to use voice input.',
+              title: 'Microphone Not Working',
+              description: 'Permission denied or no speech detected. Check your settings.',
           });
         }
       };
@@ -153,7 +151,7 @@ export default function InterviewPage() {
     if (!recognitionRef.current) {
         toast({
             title: "Voice Not Supported",
-            description: "Your browser doesn't support speech recognition.",
+            description: "Your browser is too old or unsupported for speech recognition.",
             variant: "destructive"
         });
         return;
@@ -174,7 +172,7 @@ export default function InterviewPage() {
              toast({
                 variant: 'destructive',
                 title: 'Microphone Access Denied',
-                description: 'Please enable microphone permissions in your browser settings.',
+                description: 'You denied microphone access. You have to type now.',
             });
         }
     }
@@ -206,8 +204,8 @@ export default function InterviewPage() {
       const sessionId = await saveSession(configToSave as any, finalTranscript);
       
       toast({
-        title: "Interview Complete!",
-        description: "Redirecting to your feedback...",
+        title: "Interview Over.",
+        description: "Redirecting to your feedback.",
       });
 
       setTimeout(() => {
@@ -217,8 +215,8 @@ export default function InterviewPage() {
     } catch (error) {
       console.error("Failed to save session:", error);
       toast({
-        title: "Error",
-        description: "Could not save your interview session. Please try again.",
+        title: "Save Failed",
+        description: "Couldn't save your session. Try again if you want.",
         variant: "destructive",
       });
       setIsFinishing(false);
@@ -230,7 +228,8 @@ export default function InterviewPage() {
     const currentAnswer = userAnswer;
     if (!currentAnswer.trim()) {
       toast({
-        title: "Please provide an answer",
+        title: "No answer provided.",
+        description: "You have to actually answer the question.",
         variant: "destructive",
       });
       return;
@@ -259,7 +258,7 @@ export default function InterviewPage() {
       <div className="flex h-screen items-center justify-center">
         <div className="flex flex-col items-center gap-4">
           <Loader className="h-12 w-12 animate-spin text-primary" />
-          <p className="text-muted-foreground">Preparing your interview...</p>
+          <p className="text-muted-foreground">Preparing questions...</p>
         </div>
       </div>
     );
@@ -294,19 +293,19 @@ export default function InterviewPage() {
         </Card>
         
         <div className="flex-1 flex flex-col min-h-[250px] animate-fade-in-up" style={{animationDelay: '0.2s'}}>
-          <label htmlFor="code-editor" className="font-medium mb-2 flex items-center gap-2"><Code2 className="h-5 w-5 text-primary"/> Your Answer / Notepad</label>
+          <label htmlFor="code-editor" className="font-medium mb-2 flex items-center gap-2"><Code2 className="h-5 w-5 text-primary"/> Your Answer</label>
            { hasMicPermission === false && (
                 <Alert variant="destructive" className="mb-4">
                   <MicOff className="h-4 w-4" />
                   <AlertTitle>Microphone Not Available</AlertTitle>
                   <AlertDescription>
-                    Speech recognition is not available or has been denied. Please check your browser settings and permissions. You can still type your answers.
+                    Speech recognition is off. You need to type.
                   </AlertDescription>
                 </Alert>
            )}
           <Textarea 
             id="code-editor"
-            placeholder="Click the microphone to start speaking, or type your answer here..."
+            placeholder="Type your answer here, or click the microphone to speak."
             value={userAnswer}
             onChange={(e) => setUserAnswer(e.target.value)}
             className="flex-1 font-mono text-sm shadow-inner bg-background/80"
@@ -317,7 +316,7 @@ export default function InterviewPage() {
           {isFinishing ? (
             <Button size="lg" disabled className="w-full">
               <Loader className="mr-2 h-4 w-4 animate-spin" />
-              Finishing up...
+              Finishing...
             </Button>
           ) : (
             <div className="flex items-center justify-between">
@@ -325,18 +324,18 @@ export default function InterviewPage() {
                  <Button size="icon" variant={isRecording ? 'destructive' : 'outline'} onClick={toggleRecording}>
                     {isRecording ? <Radio className="h-5 w-5 animate-pulse"/> : <Mic className="h-5 w-5"/>}
                  </Button>
-                 <p className="text-sm text-muted-foreground">{isRecording ? 'Recording...' : 'Voice Input'}</p>
+                 <p className="text-sm text-muted-foreground">{isRecording ? 'Listening...' : 'Voice Input'}</p>
               </div>
               <Button size="lg" onClick={handleNextQuestion} className="w-1/2">
                 {currentQuestionIndex < questions.length - 1 ? (
                   <>
                     <Send className="mr-2 h-4 w-4" />
-                    Submit & Next
+                    Next Question
                   </>
                 ) : (
                   <>
                     <CheckCircle className="mr-2 h-4 w-4" />
-                    Submit & Finish Interview
+                    Finish & Get Judged
                   </>
                 )}
               </Button>

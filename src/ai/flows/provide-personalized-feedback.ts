@@ -14,11 +14,11 @@ const ProvidePersonalizedFeedbackInputSchema = z.object({
 export type ProvidePersonalizedFeedbackInput = z.infer<typeof ProvidePersonalizedFeedbackInputSchema>;
 
 const ProvidePersonalizedFeedbackOutputSchema = z.object({
-  score: z.number().describe('A numerical score from 1 to 10, where 1 is poor and 10 is excellent.'),
-  strengths: z.string().describe('A detailed analysis of what the candidate did well. Provide specific examples from the transcript. Format as a paragraph.'),
-  weaknesses: z.string().describe('A detailed analysis of areas where the candidate can improve. Be constructive and provide specific examples from the transcript. Format as a paragraph.'),
-  communicationAnalysis: z.string().describe('An analysis of the candidate\'s communication style, focusing on clarity, conciseness, and structure. Comment on the use of filler words or rambling if applicable. Format as a paragraph.'),
-  improvementTips: z.string().describe('A list of 3-5 concrete, actionable tips for improvement. These should be specific to the weaknesses identified. Format as a numbered list.'),
+  score: z.number().describe('A brutally honest numerical score from 1 to 10, where 1 is abysmal and 10 is barely competent. Do not give high scores easily.'),
+  strengths: z.string().describe('A very brief, direct summary of the few things the candidate did not completely fail at. Do not use positive, encouraging language. Get to the point.'),
+  weaknesses: z'string'().describe('A detailed, brutally honest, and critical analysis of every area the candidate was weak in. Be blunt. Quote their mistakes from the transcript. Do not sugar-coat anything. This is the most important section. Format as a paragraph.'),
+  communicationAnalysis: z'string'().describe('A critical analysis of the candidate\'s communication. Point out every filler word, rambling sentence, and moment of hesitation. Was it clear? Was it concise? Probably not. State it. Format as a paragraph.'),
+  improvementTips: z.string().describe('A numbered list of 3-5 blunt, actionable directives for improvement. These should directly address the identified weaknesses. Don\'t suggest, command. Example: "1. Stop using the word \'like\'. 2. You clearly don\'t understand X, study it."'),
 });
 
 export type ProvidePersonalizedFeedbackOutput = z.infer<typeof ProvidePersonalizedFeedbackOutputSchema>;
@@ -27,23 +27,22 @@ const feedbackPrompt = ai.definePrompt({
   name: 'feedbackPrompt',
   input: { schema: ProvidePersonalizedFeedbackInputSchema },
   output: { schema: ProvidePersonalizedFeedbackOutputSchema },
-  prompt: `You are an expert technical interviewer providing detailed, constructive feedback. Analyze the following interview transcript for a {{experienceLevel}} {{userRole}} specializing in {{technicalSpecialty}}{{#if targetCompany}} targeting a position at {{targetCompany}}{{/if}}.
+  prompt: `You are a brutally honest and hyper-critical technical interviewer. Your job is to dismantle a candidate's performance to expose every flaw. Do not offer encouragement or praise. Your feedback must be direct, cutting, and focused solely on identifying weaknesses to force improvement. Analyze the following interview for a {{experienceLevel}} {{userRole}} specializing in {{technicalSpecialty}}{{#if targetCompany}} trying to get into {{targetCompany}}{{/if}}.
 
 Transcript:
 ---
 {{interviewTranscript}}
 ---
 
-Your task is to provide a comprehensive evaluation of the candidate's performance. Base your feedback entirely on the provided transcript.
+Your task is to provide a ruthlessly honest evaluation.
 
-Provide the following:
-1.  **Overall Score:** A score from 1 to 10, reflecting their overall performance based on technical accuracy, problem-solving, and communication.
-2.  **Strengths:** A detailed paragraph identifying specific technical strengths. Quote or reference parts of their answers to support your points. Mention clarity, accuracy, and depth of knowledge.
-3.  **Areas for Improvement:** A detailed paragraph on their technical weaknesses. Be constructive. Point out specific areas from the transcript where the explanation was weak, incorrect, or could have been more detailed.
-4.  **Communication Analysis:** A paragraph analyzing the candidate's communication style. Assess clarity, conciseness, and confidence. Note any excessive use of filler words or rambling.
-5.  **Actionable Improvement Tips:** A numbered list of 3 to 5 specific, actionable tips. Each tip should directly relate to a weakness you identified and suggest concrete next steps (e.g., "Review concept X," "Practice problem type Y on LeetCode," "Structure system design answers using the A-B-C framework.").
+1.  **Overall Score:** A score from 1 to 10. Don't be generous. A 5 should be average. A 10 is a mythical unicorn.
+2.  **Strengths:** Briefly list what wasn't a complete disaster. Be concise.
+3.  **Areas for Improvement:** This is the core of your feedback. Be merciless. Detail every technical mistake, every weak explanation. Quote the transcript to show them exactly where they failed.
+4.  **Communication Analysis:** Tear apart their communication style. Point out every "um," every moment of rambling, every convoluted sentence.
+5.  **Actionable Improvement Tips:** Provide a numbered list of 3-5 direct commands on what to fix. No "You could try..."; use "Do this:..."
 
-Return the result as a JSON object.`,
+Return the result as a JSON object. Be brutally honest.`,
 });
 
 export const providePersonalizedFeedbackFlow = ai.defineFlow(
@@ -55,7 +54,7 @@ export const providePersonalizedFeedbackFlow = ai.defineFlow(
   async (input) => {
     const { output } = await feedbackPrompt(input);
     if (!output) {
-      throw new Error('Failed to get feedback from AI');
+      throw new Error('AI failed to generate feedback. It probably gave up.');
     }
     return ProvidePersonalizedFeedbackOutputSchema.parse(output);
   }

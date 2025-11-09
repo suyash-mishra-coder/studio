@@ -11,11 +11,11 @@ export async function getInterviewQuestions(input: GenerateInterviewQuestionsInp
     console.error('Error generating interview questions:', error);
     // Return a fallback or throw a more specific error
     return { questions: [
-        'Could you tell me about a challenging project you worked on?',
-        'What are your biggest strengths and weaknesses?',
-        'Describe a time you had to learn a new technology quickly.',
-        'Where do you see yourself in 5 years?',
-        'Why are you interested in our company?',
+        'What makes you think you are qualified for this role?',
+        'Explain a complex topic as if I have no patience.',
+        'Describe a failure and why it was your fault.',
+        'Justify your salary expectations.',
+        'Why shouldn\'t we hire you?',
       ]
     };
   }
@@ -29,11 +29,11 @@ export async function getPersonalizedFeedback(input: ProvidePersonalizedFeedback
     console.error('Error providing personalized feedback:', error);
     // Return a fallback or throw a more specific error
     return {
-      score: 7,
-      strengths: 'Good communication skills and a solid theoretical foundation.',
-      weaknesses: 'Practical examples could be more detailed. Some hesitation on complex questions.',
-      communicationAnalysis: 'You communicated your ideas clearly, but sometimes used filler words like "um" and "like". Try to be more concise in your explanations.',
-      improvementTips: '1. Use the STAR method to structure answers about your experience. 2. Review fundamental concepts of your specialty. 3. Practice coding challenges under time constraints.',
+      score: 2,
+      strengths: 'You showed up. That\'s about it.',
+      weaknesses: 'Your answers were vague and lacked any real substance. It\'s clear you haven\'t prepared.',
+      communicationAnalysis: 'You ramble. You use "um" and "like" as a crutch. It was painful to listen to.',
+      improvementTips: '1. Study the basics. You lack them. 2. Record yourself and notice how many filler words you use. 3. Don\'t book another interview until you\'ve done the first two things.',
     };
   }
 }

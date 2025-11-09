@@ -25,7 +25,6 @@ import {
 import { EXPERIENCE_LEVELS, SPECIALTIES } from '@/lib/constants';
 
 const formSchema = z.object({
-  name: z.string().min(2, { message: 'Please enter your name.' }),
   role: z.string().min(2, { message: 'Role must be at least 2 characters.' }),
   experienceLevel: z.string({ required_error: 'Please select an experience level.' }),
   specialty: z.string({ required_error: 'Please select a specialty.' }),
@@ -35,11 +34,10 @@ const formSchema = z.object({
 
 export type FormValues = z.infer<typeof formSchema>;
 
-export function PreInterviewForm({ name, onStart }: { name: string; onStart: (values: FormValues) => void }) {
+export function PreInterviewForm({ onStart }: { onStart: (values: FormValues) => void }) {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: name,
       role: '',
       topic: '',
       targetCompany: '',
@@ -48,13 +46,9 @@ export function PreInterviewForm({ name, onStart }: { name: string; onStart: (va
 
   const { formState } = form;
 
-  function onSubmit(values: FormValues) {
-    onStart(values);
-  }
-
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={form.handleSubmit(onStart)} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <FormField
             control={form.control}
@@ -105,7 +99,7 @@ export function PreInterviewForm({ name, onStart }: { name: string; onStart: (va
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="Select your specialty" />
-                  </SelectTrigger>
+                  </Trigger>
                 </FormControl>
                 <SelectContent>
                   {SPECIALTIES.map((specialty) => (
@@ -150,7 +144,7 @@ export function PreInterviewForm({ name, onStart }: { name: string; onStart: (va
         </div>
 
         <Button type="submit" size="lg" className="w-full" disabled={formState.isSubmitting}>
-          {formState.isSubmitting ? 'Starting...' : 'Start Your Mock Interview'}
+          {formState.isSubmitting ? 'Starting...' : 'Start The Gauntlet'}
         </Button>
       </form>
     </Form>

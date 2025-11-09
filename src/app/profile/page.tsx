@@ -10,13 +10,15 @@ import { getSessions } from '@/lib/data';
 import type { InterviewSession } from '@/lib/types';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Progress } from '@/components/ui/progress';
+import { useUser } from '@/firebase';
 
 export default function UserProfilePage() {
   const [sessions, setSessions] = React.useState<InterviewSession[]>([]);
   const [loading, setLoading] = React.useState(true);
+  const { user } = useUser();
 
   const userAvatar = PlaceHolderImages.find(p => p.id === 'user-avatar');
-  const userName = "Suyash Mishra"; // In a real app, this would come from auth state
+  const userName = user?.displayName || "Anonymous"; // In a real app, this would come from auth state
 
   React.useEffect(() => {
     async function loadData() {
@@ -59,12 +61,12 @@ export default function UserProfilePage() {
       <header className="mb-12 flex flex-col items-center text-center animate-fade-in-up">
         <div className="relative">
           <Avatar className="h-28 w-28 mb-4 border-4 border-white shadow-lg">
-            <AvatarImage data-ai-hint={userAvatar?.imageHint} src={userAvatar?.imageUrl} />
+            <AvatarImage data-ai-hint={userAvatar?.imageHint} src={user?.photoURL || userAvatar?.imageUrl} />
             <AvatarFallback className="text-4xl">{userName.charAt(0)}</AvatarFallback>
           </Avatar>
         </div>
         <h1 className="font-headline text-4xl font-bold text-foreground mt-4">{userName}</h1>
-        <p className="text-muted-foreground mt-2">Your journey to interview mastery starts here.</p>
+        <p className="text-muted-foreground mt-2">A record of your performance.</p>
       </header>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-8">
@@ -104,16 +106,16 @@ export default function UserProfilePage() {
             <CardHeader>
               <div className="flex items-center gap-3">
                 <TrendingUp className="h-6 w-6 text-primary" />
-                <CardTitle>Level Progress</CardTitle>
+                <CardTitle>Progress</CardTitle>
               </div>
-              <CardDescription>Experience points to next level: Senior Engineer</CardDescription>
+              <CardDescription>Your average score is {averageScore.toFixed(1)}.</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
                 <Progress value={(averageScore/10) * 100} className="h-3"/>
                 <div className="flex justify-between text-xs text-muted-foreground">
-                    <span>{Math.round(averageScore * 100)} XP</span>
-                    <span>1000 XP</span>
+                    <span>Current Average</span>
+                    <span>Goal: 10</span>
                 </div>
               </div>
             </CardContent>
@@ -125,7 +127,7 @@ export default function UserProfilePage() {
                 <Star className="h-6 w-6 text-primary" />
                 <CardTitle>Practiced Specialties</CardTitle>
               </div>
-              <CardDescription>Topics you've recently practiced.</CardDescription>
+              <CardDescription>Topics you've attempted.</CardDescription>
             </CardHeader>
             <CardContent>
               {loading ? (
@@ -150,11 +152,11 @@ export default function UserProfilePage() {
            <Card className="animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
             <CardHeader>
               <CardTitle>Achievements</CardTitle>
-              <CardDescription>Badges you've earned on your journey.</CardDescription>
+              <CardDescription>Metrics, not participation trophies.</CardDescription>
             </CardHeader>
             <CardContent className="grid grid-cols-3 gap-4 text-center">
               <div className="flex flex-col items-center gap-2 text-muted-foreground">
-                <div className="p-3 bg-primary/10 rounded-full text-primary"><Calendar size={24}/></div>
+                <div className={`p-3 rounded-full ${totalInterviews > 0 ? 'bg-primary/10 text-primary' : 'bg-muted'}`}><Calendar size={24}/></div>
                 <span className="text-xs">First Interview</span>
               </div>
               <div className="flex flex-col items-center gap-2 text-muted-foreground/50">
