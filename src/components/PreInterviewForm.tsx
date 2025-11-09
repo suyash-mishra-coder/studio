@@ -99,7 +99,7 @@ export function PreInterviewForm({ onStart }: { onStart: (values: FormValues) =>
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="Select your specialty" />
-                  </Trigger>
+                  </SelectTrigger>
                 </FormControl>
                 <SelectContent>
                   {SPECIALTIES.map((specialty) => (
