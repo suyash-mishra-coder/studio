@@ -38,6 +38,7 @@ type SidebarContext = {
   toggleSidebar: () => void;
   forceDesktop: boolean;
   setForceDesktop: (force: boolean) => void;
+  isMounted: boolean;
 }
 
 const SidebarContext = React.createContext<SidebarContext | null>(null)
@@ -74,6 +75,7 @@ const SidebarProvider = React.forwardRef<
     const isMobile = useIsMobile()
     const [openMobile, setOpenMobile] = React.useState(false)
     const [forceDesktop, setForceDesktopState] = React.useState(false);
+    const [isMounted, setIsMounted] = React.useState(false);
 
 
     // This is the internal state of the sidebar.
@@ -104,13 +106,19 @@ const SidebarProvider = React.forwardRef<
       }
     }, [isMobile]);
 
-
     React.useEffect(() => {
+        const sidebarCookie = document.cookie.split('; ').find(row => row.startsWith(`${SIDEBAR_COOKIE_NAME}=`));
+        if (sidebarCookie) {
+          _setOpen(sidebarCookie.split('=')[1] === 'true');
+        }
+
         const desktopModeCookie = document.cookie.split('; ').find(row => row.startsWith(`${DESKTOP_MODE_COOKIE_NAME}=`));
         if (desktopModeCookie) {
             setForceDesktopState(desktopModeCookie.split('=')[1] === 'true');
         }
+        setIsMounted(true);
     }, []);
+
 
     // Helper to toggle the sidebar.
     const toggleSidebar = React.useCallback(() => {
@@ -150,8 +158,9 @@ const SidebarProvider = React.forwardRef<
         toggleSidebar,
         forceDesktop,
         setForceDesktop,
+        isMounted,
       }),
-      [state, open, setOpen, isMobile, openMobile, setOpenMobile, toggleSidebar, forceDesktop, setForceDesktop]
+      [state, open, setOpen, isMobile, openMobile, setOpenMobile, toggleSidebar, forceDesktop, setForceDesktop, isMounted]
     )
 
     return (
@@ -193,15 +202,38 @@ const Sidebar = React.forwardRef<
     {
       side = "left",
       variant = "sidebar",
-      collapsible = "offcanvas",
+      collapsible = "icon",
       className,
       children,
       ...props
     },
     ref
   ) => {
-    const { isMobile, state, openMobile, setOpenMobile, forceDesktop } = useSidebar()
+    const { isMobile, state, openMobile, setOpenMobile, forceDesktop, isMounted } = useSidebar()
     
+    if (!isMounted) {
+      return (
+        <aside
+          ref={ref}
+          className={cn(
+            "group/sidebar fixed inset-y-0 z-40 h-screen transition-all duration-300 ease-in-out",
+             "hidden md:flex flex-col w-[--sidebar-width-icon]",
+             className,
+          )}
+        >
+          <div className="flex h-full w-full flex-col bg-sidebar text-sidebar-foreground p-3 gap-4">
+             <Skeleton className="h-8 w-8" />
+             <Skeleton className="h-8 w-full" />
+             <Skeleton className="h-8 w-full" />
+             <Skeleton className="h-8 w-full" />
+             <div className="mt-auto">
+                <Skeleton className="h-10 w-full" />
+             </div>
+          </div>
+        </aside>
+      )
+    }
+
     const showSheet = isMobile && !forceDesktop;
 
     if (collapsible === "none") {
@@ -273,9 +305,11 @@ const SidebarTrigger = React.forwardRef<
   React.ElementRef<typeof Button>,
   React.ComponentProps<typeof Button>
 >(({ className, onClick, ...props }, ref) => {
-  const { toggleSidebar, isMobile } = useSidebar();
+  const { toggleSidebar, isMobile, isMounted, forceDesktop } = useSidebar();
 
-  if(!isMobile) return null;
+  if(!isMounted) return <Button ref={ref} data-sidebar="trigger" variant="ghost" size="icon" className={cn("h-7 w-7", "md:hidden", className)} {...props}><PanelLeft /></Button>
+
+  if(!isMobile && !forceDesktop) return null;
 
   return (
     <Button
@@ -285,6 +319,7 @@ const SidebarTrigger = React.forwardRef<
       size="icon"
       className={cn(
         "h-7 w-7",
+        !isMobile && "hidden", // Hide on desktop if not forcing mobile view
         className
       )}
       onClick={(event) => {
@@ -333,8 +368,12 @@ const SidebarInset = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<"main">
 >(({ className, ...props }, ref) => {
-  const { state, isMobile, forceDesktop } = useSidebar();
+  const { state, isMobile, forceDesktop, isMounted } = useSidebar();
   
+  if (!isMounted) {
+    return <main ref={ref} className={cn("flex-1 md:pl-[--sidebar-width-icon]", className)} {...props} />;
+  }
+
   const sheetVisible = isMobile && !forceDesktop;
 
   return (
@@ -344,6 +383,8 @@ const SidebarInset = React.forwardRef<
         "flex-1 transition-all duration-300 ease-in-out",
         !sheetVisible && "md:pl-[--sidebar-width-icon]",
         state === 'expanded' && !sheetVisible && "md:pl-[--sidebar-width]",
+        forceDesktop && isMobile && "pl-[--sidebar-width-icon]",
+        forceDesktop && isMobile && state === 'expanded' && "pl-[--sidebar-width]",
         className
       )}
       {...props}
@@ -781,3 +822,5 @@ export {
   SidebarTrigger,
   useSidebar,
 }
+
+    
