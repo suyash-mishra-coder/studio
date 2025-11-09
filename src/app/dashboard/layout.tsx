@@ -7,9 +7,8 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { BookOpen, LayoutDashboard, Settings, User } from 'lucide-react';
 import { Logo } from '@/components/icons';
-import { cn } from '@/lib/utils';
 import Header from '@/components/layout/header';
-import { Sidebar, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarHeader, SidebarFooter } from '@/components/ui/sidebar';
+import { Sidebar, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarHeader, SidebarFooter, SidebarInset } from '@/components/ui/sidebar';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Separator } from '@/components/ui/separator';
@@ -92,13 +91,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </SidebarMenu>
         </SidebarFooter>
       </Sidebar>
-      <div className="flex flex-col flex-1 pl-14">
+      <SidebarInset>
         <Header />
         <main className="flex-1 p-4 sm:px-6 sm:py-4 md:gap-8">
             {children}
         </main>
         <Footer />
-      </div>
+      </SidebarInset>
     </div>
   );
 }
