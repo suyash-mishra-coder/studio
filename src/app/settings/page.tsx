@@ -2,7 +2,7 @@
 'use client';
 
 import * as React from 'react';
-import { User, Bell, Palette, Shield, CreditCard, Upload } from 'lucide-react';
+import { User, Bell, Palette, Shield, CreditCard, Upload, MonitorSmartphone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -13,6 +13,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { useToast } from '@/hooks/use-toast';
 import { motion } from 'framer-motion';
+import { useSidebar } from '@/components/ui/sidebar';
 
 function SettingsSection({ title, description, icon: Icon, children, delay = 0 }: { title: string, description: string, icon: React.ElementType, children: React.ReactNode, delay?: number }) {
     return (
@@ -44,6 +45,8 @@ export default function SettingsPage() {
     const [name, setName] = React.useState("Suyash Mishra");
     const [avatar, setAvatar] = React.useState(userAvatar?.imageUrl);
     const { toast } = useToast();
+    const { forceDesktop, setForceDesktop } = useSidebar();
+
 
     const handleSaveChanges = () => {
         toast({
@@ -114,6 +117,13 @@ export default function SettingsPage() {
                             <p className="text-xs text-muted-foreground">Toggle between light and dark themes.</p>
                         </div>
                         <Switch id="dark-mode" onCheckedChange={() => document.documentElement.classList.toggle('dark')} />
+                    </div>
+                     <div className="flex items-center justify-between rounded-lg border p-4 mt-4">
+                        <div>
+                            <Label htmlFor="desktop-mode">Force Desktop Mode</Label>
+                            <p className="text-xs text-muted-foreground">Use the collapsed desktop sidebar on mobile devices.</p>
+                        </div>
+                        <Switch id="desktop-mode" checked={forceDesktop} onCheckedChange={setForceDesktop} />
                     </div>
                 </SettingsSection>
 

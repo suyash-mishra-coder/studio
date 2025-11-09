@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/tooltip"
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state"
+const DESKTOP_MODE_COOKIE_NAME = "sidebar_desktop_mode";
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
 const SIDEBAR_WIDTH = "16rem"
 const SIDEBAR_WIDTH_MOBILE = "18rem"
@@ -33,7 +34,9 @@ type SidebarContext = {
   openMobile: boolean
   setOpenMobile: (open: boolean) => void
   isMobile: boolean
-  toggleSidebar: () => void
+  toggleSidebar: () => void;
+  forceDesktop: boolean;
+  setForceDesktop: (force: boolean) => void;
 }
 
 const SidebarContext = React.createContext<SidebarContext | null>(null)
@@ -69,6 +72,8 @@ const SidebarProvider = React.forwardRef<
   ) => {
     const isMobile = useIsMobile()
     const [openMobile, setOpenMobile] = React.useState(false)
+    const [forceDesktop, setForceDesktopState] = React.useState(false);
+
 
     // This is the internal state of the sidebar.
     // We use openProp and setOpenProp for control from outside the component.
@@ -89,12 +94,29 @@ const SidebarProvider = React.forwardRef<
       [setOpenProp, open]
     )
 
+    const setForceDesktop = React.useCallback((force: boolean) => {
+      setForceDesktopState(force);
+      document.cookie = `${DESKTOP_MODE_COOKIE_NAME}=${force}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`;
+      // When toggling desktop mode on mobile, ensure the sheet closes
+      if (isMobile) {
+        setOpenMobile(false);
+      }
+    }, [isMobile]);
+
+
+    React.useEffect(() => {
+        const desktopModeCookie = document.cookie.split('; ').find(row => row.startsWith(`${DESKTOP_MODE_COOKIE_NAME}=`));
+        if (desktopModeCookie) {
+            setForceDesktopState(desktopModeCookie.split('=')[1] === 'true');
+        }
+    }, []);
+
     // Helper to toggle the sidebar.
     const toggleSidebar = React.useCallback(() => {
-      return isMobile
+      return (isMobile && !forceDesktop)
         ? setOpenMobile((open) => !open)
         : setOpen((open) => !open)
-    }, [isMobile, setOpen, setOpenMobile])
+    }, [isMobile, forceDesktop, setOpen, setOpenMobile])
 
     // Adds a keyboard shortcut to toggle the sidebar.
     React.useEffect(() => {
@@ -125,8 +147,10 @@ const SidebarProvider = React.forwardRef<
         openMobile,
         setOpenMobile,
         toggleSidebar,
+        forceDesktop,
+        setForceDesktop,
       }),
-      [state, open, setOpen, isMobile, openMobile, setOpenMobile, toggleSidebar]
+      [state, open, setOpen, isMobile, openMobile, setOpenMobile, toggleSidebar, forceDesktop, setForceDesktop]
     )
 
     return (
@@ -175,7 +199,9 @@ const Sidebar = React.forwardRef<
     },
     ref
   ) => {
-    const { isMobile, state, openMobile, setOpenMobile } = useSidebar()
+    const { isMobile, state, openMobile, setOpenMobile, forceDesktop } = useSidebar()
+    
+    const showSheet = isMobile && !forceDesktop;
 
     if (collapsible === "none") {
       return (
@@ -191,31 +217,35 @@ const Sidebar = React.forwardRef<
         </div>
       )
     }
-
-    if (isMobile) {
-      return (
-        <Sheet open={openMobile} onOpenChange={setOpenMobile} {...props}>
-          <SheetContent
-            data-sidebar="sidebar"
-            data-mobile="true"
-            className="w-[--sidebar-width] bg-sidebar p-0 text-sidebar-foreground [&>button]:hidden"
-            style={
-              {
-                "--sidebar-width": SIDEBAR_WIDTH_MOBILE,
-              } as React.CSSProperties
-            }
-            side={side}
-          >
-            <div className="flex h-full w-full flex-col">{children}</div>
-          </SheetContent>
-        </Sheet>
-      )
+    
+    if (showSheet) {
+        return (
+            <Sheet open={openMobile} onOpenChange={setOpenMobile} {...props}>
+            <SheetContent
+                data-sidebar="sidebar"
+                data-mobile="true"
+                className="w-[--sidebar-width] bg-sidebar p-0 text-sidebar-foreground [&>button]:hidden"
+                style={
+                {
+                    "--sidebar-width": SIDEBAR_WIDTH_MOBILE,
+                } as React.CSSProperties
+                }
+                side={side}
+            >
+                <div className="flex h-full w-full flex-col">{children}</div>
+            </SheetContent>
+            </Sheet>
+        );
     }
 
     return (
       <div
         ref={ref}
-        className="group peer hidden md:block text-sidebar-foreground"
+        className={cn(
+          "group peer text-sidebar-foreground",
+          showSheet ? "hidden" : "block", // Hide on mobile if sheet is shown
+          forceDesktop && isMobile ? "block" : "hidden md:block" // Logic for desktop mode
+        )}
         data-state={state}
         data-collapsible={state === "collapsed" ? collapsible : ""}
         data-variant={variant}
@@ -234,7 +264,8 @@ const Sidebar = React.forwardRef<
         />
         <div
           className={cn(
-            "duration-200 fixed inset-y-0 z-10 hidden h-svh w-[--sidebar-width] transition-[left,right,width] ease-linear md:flex",
+            "duration-200 fixed inset-y-0 z-10 h-svh w-[--sidebar-width] transition-[left,right,width] ease-linear md:flex",
+            isMobile && forceDesktop ? "flex" : "hidden md:flex",
             side === "left"
               ? "left-0 group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)]"
               : "right-0 group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)]",
@@ -263,7 +294,8 @@ const SidebarTrigger = React.forwardRef<
   React.ElementRef<typeof Button>,
   React.ComponentProps<typeof Button>
 >(({ className, onClick, ...props }, ref) => {
-  const { toggleSidebar } = useSidebar()
+  const { toggleSidebar, isMobile, forceDesktop } = useSidebar();
+  const showTrigger = isMobile || forceDesktop;
 
   return (
     <Button
@@ -271,7 +303,11 @@ const SidebarTrigger = React.forwardRef<
       data-sidebar="trigger"
       variant="ghost"
       size="icon"
-      className={cn("h-7 w-7", className)}
+      className={cn(
+        "h-7 w-7",
+        !showTrigger && "sm:hidden",
+        className
+      )}
       onClick={(event) => {
         onClick?.(event)
         toggleSidebar()
