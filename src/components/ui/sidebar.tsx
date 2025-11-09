@@ -178,6 +178,7 @@ const SidebarProvider = React.forwardRef<
               "group/sidebar-wrapper",
               className
             )}
+            data-state={state}
             ref={ref}
             {...props}
           >
@@ -234,7 +235,7 @@ const Sidebar = React.forwardRef<
       )
     }
 
-    const showSheet = isMobile && !forceDesktop;
+    const showSheet = (isMobile && !forceDesktop);
 
     if (collapsible === "none") {
       return (
@@ -305,11 +306,10 @@ const SidebarTrigger = React.forwardRef<
   React.ElementRef<typeof Button>,
   React.ComponentProps<typeof Button>
 >(({ className, onClick, ...props }, ref) => {
-  const { toggleSidebar, isMobile, isMounted, forceDesktop } = useSidebar();
+  const { toggleSidebar, isMobile, isMounted } = useSidebar();
 
-  if(!isMounted) return <Button ref={ref} data-sidebar="trigger" variant="ghost" size="icon" className={cn("h-7 w-7", "md:hidden", className)} {...props}><PanelLeft /></Button>
+  if(!isMounted || !isMobile) return null;
 
-  if(!isMobile && !forceDesktop) return null;
 
   return (
     <Button
@@ -319,7 +319,7 @@ const SidebarTrigger = React.forwardRef<
       size="icon"
       className={cn(
         "h-7 w-7",
-        !isMobile && "hidden", // Hide on desktop if not forcing mobile view
+        "md:hidden",
         className
       )}
       onClick={(event) => {
@@ -644,7 +644,7 @@ const SidebarMenuButton = React.forwardRef<
         <TooltipContent
           side="right"
           align="center"
-          hidden={state !== "collapsed" || isMobile}
+          hidden={(state !== "collapsed" && !isMobile)}
           {...tooltip}
         />
       </Tooltip>

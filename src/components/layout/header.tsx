@@ -32,7 +32,9 @@ export default function Header() {
   const userEmail = user?.email || "Not signed in";
 
   const handleLogout = async () => {
-    await signOut(auth);
+    if (auth) {
+        await signOut(auth);
+    }
     router.push('/');
   };
 
@@ -40,7 +42,7 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
        <SidebarTrigger />
-        <div className="relative flex-1 md:grow-0">
+        <div className="relative ml-auto flex-1 md:grow-0">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
               type="search"
@@ -48,7 +50,7 @@ export default function Header() {
               className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[336px]"
             />
         </div>
-        <div className="flex flex-1 items-center justify-end space-x-4">
+        <div className="flex items-center space-x-2">
           <Button asChild className="hidden sm:inline-flex">
             <Link href="/">
               <Plus className="mr-2 h-4 w-4" /> New Interview
@@ -102,3 +104,4 @@ export default function Header() {
       </header>
   );
 }
+

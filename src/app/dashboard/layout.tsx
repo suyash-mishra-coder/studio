@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -13,6 +14,7 @@ import { Separator } from '@/components/ui/separator';
 import Footer from '@/components/layout/footer';
 import { useAuth, useUser } from '@/firebase';
 import { signOut } from 'firebase/auth';
+import { useSidebar } from '@/components/ui/sidebar';
 
 const navLinks = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -25,6 +27,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const router = useRouter();
   const { user, isUserLoading } = useUser();
   const auth = useAuth();
+  const { state: sidebarState } = useSidebar();
   
   const userAvatar = PlaceHolderImages.find(p => p.id === 'user-avatar');
   const userName = user?.displayName || user?.email || 'Anonymous';
@@ -126,7 +129,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </SidebarMenu>
         </SidebarFooter>
       </Sidebar>
-      <main className="flex-1 transition-all duration-300 ease-in-out md:pl-[--sidebar-width-icon] group-data-[state=expanded]/sidebar-wrapper:md:pl-[--sidebar-width]">
+      <main className="flex flex-1 flex-col transition-all duration-300 ease-in-out md:pl-[--sidebar-width-icon] group-data-[state=expanded]/sidebar-wrapper:md:pl-[--sidebar-width]">
         <Header />
         <div className="flex-1 p-4 sm:px-6 sm:py-4 md:gap-8">
             {children}
@@ -136,3 +139,4 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     </div>
   );
 }
+
