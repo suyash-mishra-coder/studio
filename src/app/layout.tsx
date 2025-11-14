@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils';
 import { Toaster } from '@/components/ui/toaster';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { FirebaseClientProvider } from '@/firebase/client-provider';
+import DesktopTip from '@/components/DesktopTip';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
@@ -30,6 +31,7 @@ export default function RootLayout({
           </SidebarProvider>
         </FirebaseClientProvider>
         <Toaster />
+        <DesktopTip />
       </body>
     </html>
   );
