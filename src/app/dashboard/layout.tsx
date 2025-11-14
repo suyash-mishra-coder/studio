@@ -4,7 +4,7 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { BookOpen, LayoutDashboard, Settings, User, LogOut } from 'lucide-react';
+import { BookOpen, LayoutDashboard, Settings, User, LogOut, X, Monitor } from 'lucide-react';
 import { Logo } from '@/components/icons';
 import Header from '@/components/layout/header';
 import { Sidebar, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarHeader, SidebarFooter } from '@/components/ui/sidebar';
@@ -14,12 +14,52 @@ import { Separator } from '@/components/ui/separator';
 import Footer from '@/components/layout/footer';
 import { useAuth, useUser } from '@/firebase';
 import { signOut } from 'firebase/auth';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
 
 const navLinks = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/learn', label: 'Learning Hub', icon: BookOpen },
   { href: '/profile', label: 'Profile', icon: User },
 ];
+
+function DesktopTip() {
+    const isMobile = useIsMobile();
+    const [isOpen, setIsOpen] = React.useState(true);
+    
+    React.useEffect(() => {
+        const tipDismissed = localStorage.getItem('desktop-tip-dismissed');
+        if (tipDismissed) {
+            setIsOpen(false);
+        }
+    }, []);
+
+    const handleDismiss = () => {
+        setIsOpen(false);
+        localStorage.setItem('desktop-tip-dismissed', 'true');
+    };
+
+    if (!isMobile || !isOpen) {
+        return null;
+    }
+
+    return (
+        <div className="fixed bottom-0 left-0 right-0 z-50 p-4 md:hidden animate-fade-in-up">
+             <Alert className="flex items-center justify-between bg-background/80 backdrop-blur-md">
+                <div className="flex items-center gap-3">
+                    <Monitor className="h-5 w-5 text-primary"/>
+                    <AlertDescription className="text-sm text-muted-foreground">
+                        For a better experience, use a desktop browser.
+                    </AlertDescription>
+                </div>
+                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={handleDismiss}>
+                    <X className="h-4 w-4"/>
+                </Button>
+            </Alert>
+        </div>
+    );
+}
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -127,13 +167,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </SidebarMenu>
         </SidebarFooter>
       </Sidebar>
-      <main className="flex flex-1 flex-col transition-all duration-300 ease-in-out md:pl-[--sidebar-width-icon] group-data-[state=expanded]/sidebar-wrapper:md:pl-[--sidebar-width]">
+      <div className="flex flex-col flex-1 transition-all duration-300 ease-in-out md:pl-[--sidebar-width-icon] group-data-[state=expanded]/sidebar-wrapper:md:pl-[--sidebar-width]">
         <Header />
-        <div className="flex-1 p-4 sm:px-6 sm:py-4 md:gap-8">
+        <main className="flex-1 p-4 sm:px-6 sm:py-4 md:gap-8 mb-16 md:mb-0">
             {children}
-        </div>
+        </main>
         <Footer />
-      </main>
+      </div>
+      <DesktopTip />
     </div>
   );
 }
