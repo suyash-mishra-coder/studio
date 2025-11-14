@@ -74,7 +74,7 @@ export default function UserProfilePage() {
           </Avatar>
         </div>
         <h1 className="font-headline text-4xl font-bold text-foreground mt-4">{userName}</h1>
-        <p className="text-muted-foreground mt-2">A record of your performance.</p>
+        <p className="text-muted-foreground mt-2">Your performance and progress overview.</p>
       </motion.header>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-8">
@@ -120,7 +120,7 @@ export default function UserProfilePage() {
                 <TrendingUp className="h-6 w-6 text-primary" />
                 <CardTitle>Progress</CardTitle>
               </div>
-              <CardDescription>Your average score is {averageScore.toFixed(1)}.</CardDescription>
+              <CardDescription>Your current average score is {averageScore.toFixed(1)} out of 10.</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
@@ -139,7 +139,7 @@ export default function UserProfilePage() {
                 <Star className="h-6 w-6 text-primary" />
                 <CardTitle>Practiced Specialties</CardTitle>
               </div>
-              <CardDescription>Topics you've attempted.</CardDescription>
+              <CardDescription>Topics you've covered in your interviews.</CardDescription>
             </CardHeader>
             <CardContent>
               {loading ? (
@@ -150,11 +150,11 @@ export default function UserProfilePage() {
                 </div>
               ) : (
                 <div className="flex flex-wrap gap-2">
-                  {uniqueSpecialties.slice(0, 5).map(specialty => (
+                  {uniqueSpecialties.length > 0 ? uniqueSpecialties.slice(0, 5).map(specialty => (
                     <Badge key={specialty} variant="secondary" className="text-base py-1 px-3">
                       {specialty}
                     </Badge>
-                  ))}
+                  )) : <p className='text-sm text-muted-foreground'>No specialties practiced yet.</p>}
                 </div>
               )}
             </CardContent>
@@ -164,15 +164,15 @@ export default function UserProfilePage() {
            <Card>
             <CardHeader>
               <CardTitle>Achievements</CardTitle>
-              <CardDescription>Metrics, not participation trophies.</CardDescription>
+              <CardDescription>Milestones you've reached.</CardDescription>
             </CardHeader>
             <CardContent className="grid grid-cols-3 gap-4 text-center">
               <div className="flex flex-col items-center gap-2 text-muted-foreground">
                 <div className={`p-3 rounded-full ${totalInterviews > 0 ? 'bg-primary/10 text-primary' : 'bg-muted'}`}><Calendar size={24}/></div>
                 <span className="text-xs">First Interview</span>
               </div>
-              <div className="flex flex-col items-center gap-2 text-muted-foreground/50">
-                <div className="p-3 bg-muted rounded-full"><Award size={24}/></div>
+              <div className={`flex flex-col items-center gap-2 ${bestScore === 10 ? 'text-muted-foreground' : 'text-muted-foreground/50'}`}>
+                <div className={`p-3 rounded-full ${bestScore === 10 ? 'bg-green-500/10 text-green-500' : 'bg-muted'}`}><Award size={24}/></div>
                 <span className="text-xs">Perfect Score</span>
               </div>
               <div className="flex flex-col items-center gap-2 text-muted-foreground/50">

@@ -1,7 +1,8 @@
+
 'use client';
 
 import * as React from 'react';
-import { BookOpen, ChevronRight, History, Plus, TrendingUp, Users } from 'lucide-react';
+import { BookOpen, ChevronRight, Plus, TrendingUp, Users } from 'lucide-react';
 import Link from 'next/link';
 import { format } from 'date-fns';
 import type { ChartConfig } from '@/components/ui/chart';
@@ -113,7 +114,7 @@ export default function DashboardPage() {
               <CardContent>
                 <div className="text-2xl font-bold">{sessions.length}</div>
                 <p className="text-xs text-muted-foreground">
-                  Your raw attempt count.
+                  Number of interviews you've completed.
                 </p>
               </CardContent>
             </Card>
@@ -127,7 +128,7 @@ export default function DashboardPage() {
               <CardContent>
                 <div className="text-2xl font-bold">{(sessions.reduce((acc, s) => acc + (s.score || 0), 0) / sessions.length || 0).toFixed(1)}/10</div>
                 <p className="text-xs text-muted-foreground">
-                  Your performance benchmark.
+                  Your average performance.
                 </p>
               </CardContent>
             </Card>
@@ -139,7 +140,7 @@ export default function DashboardPage() {
               <CardContent>
                  <div className="text-2xl font-bold truncate">{specialtyScoreData.length > 0 ? specialtyScoreData.sort((a,b) => b.score - a.score)[0].specialty : 'N/A'}</div>
                 <p className="text-xs text-muted-foreground">
-                  Your least weak area.
+                  Your strongest area so far.
                 </p>
               </CardContent>
             </Card>
@@ -161,7 +162,7 @@ export default function DashboardPage() {
         <Card className="lg:col-span-4">
           <CardHeader>
             <CardTitle>Performance Trend</CardTitle>
-            <CardDescription>Your score history. Last 10 sessions.</CardDescription>
+            <CardDescription>Your score history for the last 10 sessions.</CardDescription>
           </CardHeader>
           <CardContent>
             {loading ? (
@@ -187,7 +188,7 @@ export default function DashboardPage() {
               </ChartContainer>
             ) : (
               <div className="h-[250px] flex items-center justify-center text-muted-foreground">
-                No data. Do an interview.
+                No interview data yet. Complete an interview to see your progress.
               </div>
             )}
           </CardContent>
@@ -196,7 +197,7 @@ export default function DashboardPage() {
         <Card className="lg:col-span-3">
             <CardHeader>
                 <CardTitle>Scores by Specialty</CardTitle>
-                <CardDescription>Average scores per technical area.</CardDescription>
+                <CardDescription>Your average scores per technical area.</CardDescription>
             </CardHeader>
             <CardContent>
                 {loading ? (
@@ -227,7 +228,7 @@ export default function DashboardPage() {
                     </ChartContainer>
                 ) : (
                     <div className="h-[250px] flex items-center justify-center text-muted-foreground">
-                        Complete an interview to see scores.
+                        Complete an interview to see your scores by specialty.
                     </div>
                 )}
             </CardContent>
@@ -238,7 +239,7 @@ export default function DashboardPage() {
             <div className="flex items-center justify-between">
                 <div>
                     <CardTitle>Recent History</CardTitle>
-                    <CardDescription>Your last few attempts.</CardDescription>
+                    <CardDescription>Your last few interview sessions.</CardDescription>
                 </div>
                  <Button asChild variant="ghost">
                     <Link href="#">View All</Link>
@@ -292,7 +293,7 @@ export default function DashboardPage() {
                 ) : (
                   <TableRow>
                     <TableCell colSpan={5} className="text-center h-24">
-                      No sessions found. Start an interview.
+                      You have no interview history yet.
                     </TableCell>
                   </TableRow>
                 )}

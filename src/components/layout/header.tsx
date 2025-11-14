@@ -2,9 +2,7 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 import { Plus, User, Settings, Search, Bell, LogOut } from 'lucide-react';
-import { Logo } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -104,4 +102,3 @@ export default function Header() {
       </header>
   );
 }
-

@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
-import { Sheet, SheetContent } from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet"
 import { Skeleton } from "@/components/ui/skeleton"
 import {
   Tooltip,
@@ -306,9 +306,9 @@ const SidebarTrigger = React.forwardRef<
   React.ElementRef<typeof Button>,
   React.ComponentProps<typeof Button>
 >(({ className, onClick, ...props }, ref) => {
-  const { toggleSidebar, isMobile, isMounted } = useSidebar();
+  const { toggleSidebar, isMobile, forceDesktop, isMounted } = useSidebar();
 
-  if(!isMounted || !isMobile) return null;
+  if(!isMounted || (isMobile && forceDesktop)) return null;
 
 
   return (
@@ -822,5 +822,3 @@ export {
   SidebarTrigger,
   useSidebar,
 }
-
-    

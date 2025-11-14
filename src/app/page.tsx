@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -134,7 +135,7 @@ export default function Home() {
                 <Alert>
                   <AlertTitle className="font-bold">Free Trial Ended</AlertTitle>
                   <AlertDescription>
-                    You've used all your free interviews. Sign up to continue. No more free rides.
+                    You've used all your free interviews. Please sign up to continue practicing.
                   </AlertDescription>
                   <div className="flex gap-4 mt-4">
                     <Button className="w-full" asChild>
@@ -196,9 +197,9 @@ export default function Home() {
               >
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-2xl font-headline">Alright, {name}.</CardTitle>
+                    <CardTitle className="text-2xl font-headline">Hello, {name}!</CardTitle>
                     <CardDescription>
-                      Let's set up your mock interview. Don't waste time.
+                      Let's set up your mock interview.
                     </CardDescription>
                   </CardHeader>
                   <CardContent>

@@ -1,3 +1,4 @@
+
 import { motion } from 'framer-motion';
 
 export default function Footer() {
@@ -8,7 +9,7 @@ export default function Footer() {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.5 }}
         >
-            © 2024 Mockview AI. All Rights Reserved. Developed by Suyash Mishra.
+            © 2024 Mockview AI. All Rights Reserved.
         </motion.footer>
     )
 }

@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -126,7 +127,7 @@ export default function FeedbackPage() {
   }
 
   if (!feedback || !session) {
-    return <div className="flex h-screen items-center justify-center"><p>Feedback not found for this session.</p></div>;
+    return <div className="flex h-screen items-center justify-center"><p>Feedback not found. It's not you, it's us.</p></div>;
   }
 
   return (

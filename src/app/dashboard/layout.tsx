@@ -14,7 +14,6 @@ import { Separator } from '@/components/ui/separator';
 import Footer from '@/components/layout/footer';
 import { useAuth, useUser } from '@/firebase';
 import { signOut } from 'firebase/auth';
-import { useSidebar } from '@/components/ui/sidebar';
 
 const navLinks = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -27,7 +26,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const router = useRouter();
   const { user, isUserLoading } = useUser();
   const auth = useAuth();
-  const { state: sidebarState } = useSidebar();
   
   const userAvatar = PlaceHolderImages.find(p => p.id === 'user-avatar');
   const userName = user?.displayName || user?.email || 'Anonymous';
@@ -53,7 +51,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-muted/40">
-      <Sidebar variant='sidebar' collapsible='icon'>
+       <Sidebar variant='sidebar' collapsible='icon'>
         <SidebarHeader>
            <Link href="/" className="flex items-center gap-2 font-semibold">
               <Logo />
@@ -139,4 +137,3 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     </div>
   );
 }
-

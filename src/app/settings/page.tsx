@@ -13,6 +13,7 @@ import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { useToast } from '@/hooks/use-toast';
 import { motion } from 'framer-motion';
 import { useSidebar } from '@/components/ui/sidebar';
+import { useUser } from '@/firebase';
 
 function SettingsSection({ title, description, icon: Icon, children, delay = 0 }: { title: string, description: string, icon: React.ElementType, children: React.ReactNode, delay?: number }) {
     return (
@@ -40,9 +41,10 @@ function SettingsSection({ title, description, icon: Icon, children, delay = 0 }
 }
 
 export default function SettingsPage() {
+    const { user } = useUser();
     const userAvatar = PlaceHolderImages.find(p => p.id === 'user-avatar');
-    const [name, setName] = React.useState("Suyash Mishra");
-    const [avatar, setAvatar] = React.useState(userAvatar?.imageUrl);
+    const [name, setName] = React.useState(user?.displayName || "Anonymous");
+    const [avatar, setAvatar] = React.useState(user?.photoURL || userAvatar?.imageUrl);
     const { toast } = useToast();
     const { forceDesktop, setForceDesktop } = useSidebar();
 
