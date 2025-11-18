@@ -37,16 +37,21 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     }
   }, [user, isUserLoading, router]);
 
-  if (isUserLoading || !user) {
-      return <div className="flex h-screen items-center justify-center">Loading...</div>;
-  }
-
   const handleLogout = async () => {
     if (auth) {
       await signOut(auth);
     }
     router.push('/');
   };
+  
+  if (isUserLoading) {
+    return <div className="flex h-screen items-center justify-center">Loading...</div>;
+  }
+  
+  if (!user) {
+    // This will be briefly visible before the redirect kicks in.
+    return <div className="flex h-screen items-center justify-center">Redirecting to login...</div>;
+  }
 
 
   return (
