@@ -22,10 +22,10 @@ export default function SplashScreen() {
             <Logo />
             <div className="text-center">
                 <h1 className="text-xl font-medium text-muted-foreground">
-                    A project by
+                    developed by
                 </h1>
                 <h2 className="text-3xl font-bold text-foreground">
-                    Suyash Mishra
+                    suyash mishra
                 </h2>
             </div>
       </motion.div>

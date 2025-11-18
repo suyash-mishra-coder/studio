@@ -9,7 +9,7 @@ export default function Footer() {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.5 }}
         >
-            © 2024 Mockview AI by suyash mishra. All Rights Reserved.
+            © 2024 Mockview AI. Developed by suyash mishra. All Rights Reserved.
         </motion.footer>
     )
 }
