@@ -33,7 +33,7 @@ export default function Home() {
       setTrialsUsed(storedTrials ? parseInt(storedTrials, 10) : 0);
     }
   }, []);
-  
+
   const handleStart = () => {
     if (trialsUsed >= MAX_FREE_TRIALS && !user) {
       setShowTrialEnded(true);
