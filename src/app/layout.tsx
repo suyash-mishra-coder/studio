@@ -4,9 +4,8 @@ import { Inter } from 'next/font/google';
 import './globals.css';
 import { cn } from '@/lib/utils';
 import { Toaster } from '@/components/ui/toaster';
-import { SidebarProvider } from '@/components/ui/sidebar';
-import { FirebaseClientProvider } from '@/firebase/client-provider';
 import DesktopTip from '@/components/DesktopTip';
+import ClientProvider from '@/firebase/client-provider';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
@@ -23,13 +22,9 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={cn('font-body antialiased min-h-screen flex flex-col bg-background', inter.variable)}>
-        <FirebaseClientProvider>
-          <SidebarProvider>
-            <div className="flex flex-col flex-1">
-              {children}
-            </div>
-          </SidebarProvider>
-        </FirebaseClientProvider>
+        <ClientProvider>
+            {children}
+        </ClientProvider>
         <Toaster />
         <DesktopTip />
       </body>
