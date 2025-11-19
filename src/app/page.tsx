@@ -1,20 +1,19 @@
-
 'use client';
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
-import * as z from 'zod';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Bot, BookCheck } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import Footer from '@/components/layout/footer';
 import { useUser } from '@/firebase';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { PreInterviewForm, type FormValues } from '@/components/PreInterviewForm';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { AnswerBuddyForm } from '@/components/AnswerBuddyForm';
 
 const MAX_FREE_TRIALS = 3;
 
@@ -22,55 +21,37 @@ export default function Home() {
   const router = useRouter();
   const { user, isUserLoading } = useUser();
   
-  const [step, setStep] = React.useState(0);
-  const [name, setName] = React.useState('');
   const [trialsUsed, setTrialsUsed] = React.useState(0);
   const [showTrialEnded, setShowTrialEnded] = React.useState(false);
+  const [name, setName] = React.useState('');
 
   React.useEffect(() => {
     if (typeof window !== 'undefined') {
       const storedTrials = localStorage.getItem('mockview-trials-used');
       setTrialsUsed(storedTrials ? parseInt(storedTrials, 10) : 0);
     }
-  }, []);
-
-  const handleStart = () => {
-    if (trialsUsed >= MAX_FREE_TRIALS && !user) {
-      setShowTrialEnded(true);
-    } else {
-        // If user is logged in, use their display name
-        if (user?.displayName) {
-            setName(user.displayName);
-            setStep(2);
-        } else {
-            setStep(1);
-        }
+    if (user?.displayName) {
+        setName(user.displayName);
     }
-  };
-  
-  const handleNameSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (name.trim()) {
-        setStep(2);
-    }
-  }
+  }, [user]);
 
   const handleStartInterview = (values: FormValues) => {
-    if (trialsUsed < MAX_FREE_TRIALS || user) {
-      if (!user) {
-        const newTrialCount = trialsUsed + 1;
-        localStorage.setItem('mockview-trials-used', newTrialCount.toString());
-        setTrialsUsed(newTrialCount);
-      }
-
-      const params = new URLSearchParams({
-        ...values,
-        name,
-      });
-      router.push(`/interview/new-interview-123?${params.toString()}`);
-    } else {
+    if (trialsUsed >= MAX_FREE_TRIALS && !user) {
       setShowTrialEnded(true);
+      return;
     }
+
+    if (!user) {
+      const newTrialCount = trialsUsed + 1;
+      localStorage.setItem('mockview-trials-used', newTrialCount.toString());
+      setTrialsUsed(newTrialCount);
+    }
+
+    const params = new URLSearchParams({
+      ...values,
+      name: user?.displayName || 'Candidate',
+    });
+    router.push(`/interview/new-interview-123?${params.toString()}`);
   }
   
   if (isUserLoading) {
@@ -103,7 +84,7 @@ export default function Home() {
       </header>
 
       <main className="flex flex-col flex-1 items-center justify-center p-4 md:p-8 bg-background">
-        <div className="w-full max-w-lg">
+        <div className="w-full max-w-2xl">
           <header className="text-center mb-10">
             <motion.h1 
               className="font-headline text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-400"
@@ -124,7 +105,7 @@ export default function Home() {
           </header>
 
           <AnimatePresence mode="wait">
-             {showTrialEnded && (
+             {showTrialEnded ? (
               <motion.div
                 key="trialEnded"
                 initial={{ opacity: 0, scale: 0.95 }}
@@ -147,66 +128,58 @@ export default function Home() {
                   </div>
                 </Alert>
               </motion.div>
-            )}
-
-            {step === 0 && !showTrialEnded && (
-              <motion.div
-                key="step0"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.3 }}
-                className="text-center"
-              >
-                <Button size="lg" className="text-lg px-8 py-6" onClick={handleStart}>
-                    { user ? 'Start New Interview' : `Start Free Interview (${MAX_FREE_TRIALS - trialsUsed} left)`}
-                </Button>
-              </motion.div>
-            )}
-
-            {step === 1 && !showTrialEnded && (
-              <motion.div
-                  key="step1"
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  transition={{ duration: 0.3 }}
-                  className="text-center"
-              >
-                  <h2 className="text-2xl font-semibold mb-4">First, what's your name?</h2>
-                  <form onSubmit={handleNameSubmit} className="flex gap-2">
-                      <Input 
-                          type="text"
-                          placeholder="Enter your name..."
-                          value={name}
-                          onChange={(e) => setName(e.target.value)}
-                          className="text-center text-lg h-12"
-                          autoFocus
-                      />
-                      <Button type="submit" size="lg" className="h-12">Continue</Button>
-                  </form>
-              </motion.div>
-            )}
-            
-            {step === 2 && !showTrialEnded && (
-              <motion.div
-                key="step2"
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.4, ease: 'easeOut' }}
-              >
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-2xl font-headline">Hello, {name}!</CardTitle>
-                    <CardDescription>
-                      Let's set up your mock interview.
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <PreInterviewForm onStart={handleStartInterview}/>
-                  </CardContent>
-                </Card>
-              </motion.div>
+            ) : (
+                 <motion.div
+                    key="tools"
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.4, ease: 'easeOut' }}
+                 >
+                    <Tabs defaultValue="interview" className="w-full">
+                        <TabsList className="grid w-full grid-cols-2">
+                            <TabsTrigger value="interview">
+                                <Bot className="mr-2 h-4 w-4" />
+                                Mock Interview
+                            </TabsTrigger>
+                            <TabsTrigger value="buddy">
+                                <BookCheck className="mr-2 h-4 w-4" />
+                                Answer Buddy
+                            </TabsTrigger>
+                        </TabsList>
+                        <TabsContent value="interview">
+                            <Card>
+                            <CardHeader>
+                                <CardTitle className="text-2xl font-headline">AI Mock Interview</CardTitle>
+                                <CardDescription>
+                                  Practice a full interview session with an AI interviewer.
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <PreInterviewForm 
+                                    onStart={handleStartInterview} 
+                                    trialsLeft={user ? undefined : MAX_FREE_TRIALS - trialsUsed}
+                                />
+                            </CardContent>
+                            </Card>
+                        </TabsContent>
+                        <TabsContent value="buddy">
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle className="text-2xl font-headline">Interview Answer Buddy</CardTitle>
+                                    <CardDescription>
+                                       Get AI-powered help to craft the perfect answer for a specific question.
+                                    </CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    <AnswerBuddyForm 
+                                      trialsLeft={user ? undefined : MAX_FREE_TRIALS - trialsUsed}
+                                      onTrialEnd={() => setShowTrialEnded(true)}
+                                    />
+                                </CardContent>
+                            </Card>
+                        </TabsContent>
+                    </Tabs>
+                </motion.div>
             )}
           </AnimatePresence>
         </div>

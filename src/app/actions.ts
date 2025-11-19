@@ -2,6 +2,7 @@
 
 import { generateInterviewQuestionsFlow, GenerateInterviewQuestionsInput } from '@/ai/flows/generate-interview-questions';
 import { providePersonalizedFeedbackFlow, ProvidePersonalizedFeedbackInput } from '@/ai/flows/provide-personalized-feedback';
+import { generateInterviewAnswerFlow, GenerateInterviewAnswerInput } from '@/ai/flows/generate-interview-answer';
 
 export async function getInterviewQuestions(input: GenerateInterviewQuestionsInput) {
   try {
@@ -36,4 +37,9 @@ export async function getPersonalizedFeedback(input: ProvidePersonalizedFeedback
       improvementTips: '1. Review the fundamentals of your specialty. 2. Practice explaining your thought process out loud. 3. Use the STAR method for behavioral questions.',
     };
   }
+}
+
+export async function getInterviewAnswer(input: GenerateInterviewAnswerInput) {
+  const result = await generateInterviewAnswerFlow(input);
+  return result;
 }

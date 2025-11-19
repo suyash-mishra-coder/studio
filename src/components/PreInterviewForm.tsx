@@ -34,7 +34,7 @@ const formSchema = z.object({
 
 export type FormValues = z.infer<typeof formSchema>;
 
-export function PreInterviewForm({ onStart }: { onStart: (values: FormValues) => void }) {
+export function PreInterviewForm({ onStart, trialsLeft }: { onStart: (values: FormValues) => void; trialsLeft?: number }) {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -144,7 +144,9 @@ export function PreInterviewForm({ onStart }: { onStart: (values: FormValues) =>
         </div>
 
         <Button type="submit" size="lg" className="w-full" disabled={formState.isSubmitting}>
-          {formState.isSubmitting ? 'Starting...' : 'Start Interview'}
+          {formState.isSubmitting ? 'Starting...' : 
+            (trialsLeft !== undefined ? `Start Interview (${trialsLeft} left)` : 'Start Interview')
+          }
         </Button>
       </form>
     </Form>
