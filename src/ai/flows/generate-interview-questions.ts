@@ -1,3 +1,4 @@
+
 'use server';
 
 import { z } from 'zod';
@@ -34,7 +35,7 @@ The questions should cover a range of complexities and include:
 Ensure the questions are distinct and require in-depth answers.`,
 });
 
-export const generateInterviewQuestionsFlow = ai.defineFlow(
+const generateInterviewQuestionsFlow = ai.defineFlow(
   {
     name: 'generateInterviewQuestionsFlow',
     inputSchema: GenerateInterviewQuestionsInputSchema,
@@ -49,3 +50,8 @@ export const generateInterviewQuestionsFlow = ai.defineFlow(
     return output;
   }
 );
+
+
+export async function getInterviewQuestions(input: GenerateInterviewQuestionsInput): Promise<GenerateInterviewQuestionsOutput> {
+    return await generateInterviewQuestionsFlow(input);
+}

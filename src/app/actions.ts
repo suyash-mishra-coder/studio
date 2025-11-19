@@ -1,12 +1,16 @@
+
 'use server';
 
-import { generateInterviewQuestionsFlow, GenerateInterviewQuestionsInput } from '@/ai/flows/generate-interview-questions';
-import { providePersonalizedFeedbackFlow, ProvidePersonalizedFeedbackInput } from '@/ai/flows/provide-personalized-feedback';
-import { generateInterviewAnswerFlow, GenerateInterviewAnswerInput } from '@/ai/flows/generate-interview-answer';
+import { getInterviewQuestions, type GenerateInterviewQuestionsInput } from '@/ai/flows/generate-interview-questions';
+import { getPersonalizedFeedback, type ProvidePersonalizedFeedbackInput } from '@/ai/flows/provide-personalized-feedback';
+import { generateInterviewAnswer, type GenerateInterviewAnswerInput } from '@/ai/flows/generate-interview-answer';
 
-export async function getInterviewQuestions(input: GenerateInterviewQuestionsInput) {
+// Re-export the functions to be used as server actions.
+// This file acts as the boundary between server and client.
+
+export async function getInterviewQuestionsAction(input: GenerateInterviewQuestionsInput) {
   try {
-    const result = await generateInterviewQuestionsFlow(input);
+    const result = await getInterviewQuestions(input);
     return result;
   } catch (error) {
     console.error('Error generating interview questions:', error);
@@ -22,11 +26,12 @@ export async function getInterviewQuestions(input: GenerateInterviewQuestionsInp
   }
 }
 
-export async function getPersonalizedFeedback(input: ProvidePersonalizedFeedbackInput) {
+export async function getPersonalizedFeedbackAction(input: ProvidePersonalizedFeedbackInput) {
   try {
-    const result = await providePersonalizedFeedbackFlow(input);
+    const result = await getPersonalizedFeedback(input);
     return result;
-  } catch (error) {
+  } catch (error)
+    {
     console.error('Error providing personalized feedback:', error);
     // Return a fallback or throw a more specific error
     return {
@@ -39,7 +44,7 @@ export async function getPersonalizedFeedback(input: ProvidePersonalizedFeedback
   }
 }
 
-export async function getInterviewAnswer(input: GenerateInterviewAnswerInput) {
-  const result = await generateInterviewAnswerFlow(input);
+export async function getInterviewAnswerAction(input: GenerateInterviewAnswerInput) {
+  const result = await generateInterviewAnswer(input);
   return result;
 }

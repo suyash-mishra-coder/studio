@@ -8,13 +8,14 @@ import { format } from 'date-fns';
 import { motion } from 'framer-motion';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { getPersonalizedFeedback } from '@/app/actions';
+import { getPersonalizedFeedbackAction } from '@/app/actions';
 import { getFeedback, getSession } from '@/lib/data';
 import type { InterviewFeedback, InterviewSession } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
+import type { ProvidePersonalizedFeedbackInput } from '@/ai/flows/provide-personalized-feedback';
 
 function ScoreCircle({ score }: { score: number }) {
   const circumference = 2 * Math.PI * 45;
@@ -92,13 +93,13 @@ export default function FeedbackPage() {
         // If feedback is not generated yet, call the AI
         if (!feedbackData.strengths && feedbackData.transcript.length > 0) {
           setGeneratingFeedback(true);
-          const aiFeedback = await getPersonalizedFeedback({
+          const aiFeedback = await getPersonalizedFeedbackAction({
             interviewTranscript: feedbackData.transcript.map(t => `${t.type === 'question' ? 'Interviewer:' : 'You:'} ${t.content}`).join('\n'),
             userRole: sessionData.role,
             experienceLevel: "Mid-level", // This can be dynamic in a real app
             technicalSpecialty: sessionData.specialty,
             targetCompany: "A top tech company" // This can be dynamic
-          });
+          } as ProvidePersonalizedFeedbackInput);
           setFeedback({...feedbackData, ...aiFeedback});
           setGeneratingFeedback(false);
         } else {

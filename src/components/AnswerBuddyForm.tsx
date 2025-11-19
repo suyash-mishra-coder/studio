@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -19,8 +20,8 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { EXPERIENCE_LEVELS } from '@/lib/constants';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-import { getInterviewAnswer } from '@/app/actions';
-import type { GenerateInterviewAnswerOutput } from '@/ai/flows/generate-interview-answer';
+import { getInterviewAnswerAction } from '@/app/actions';
+import type { GenerateInterviewAnswerOutput, GenerateInterviewAnswerInput } from '@/ai/flows/generate-interview-answer';
 import { useUser } from '@/firebase';
 
 const formSchema = z.object({
@@ -51,7 +52,7 @@ export function AnswerBuddyForm({ trialsLeft, onTrialEnd }: { trialsLeft?: numbe
     }
 
     setResult(null); // Clear previous results
-    const response = await getInterviewAnswer(values);
+    const response = await getInterviewAnswerAction(values as GenerateInterviewAnswerInput);
     setResult(response);
 
      if (trialsLeft !== undefined && !user) {

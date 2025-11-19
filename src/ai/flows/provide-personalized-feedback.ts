@@ -1,3 +1,4 @@
+
 'use server';
 
 import { z } from 'zod';
@@ -39,13 +40,13 @@ Your task is to provide a fair and constructive evaluation.
 1.  **Overall Score:** A score from 1 to 10. Be fair. An average performance should be around a 5-6. An exceptional one is 9-10.
 2.  **Strengths:** Start with positive reinforcement. List what they did well. Be specific.
 3.  **Areas for Improvement:** Constructively point out technical mistakes or weak explanations. Quote the transcript to provide context, and explain *why* it's an area for improvement.
-4.  **Communication Analysis:** Analyze their communication style. Was it clear, structured, and confident? Offer friendly advice on how to improve.
+4.  **Communication Analysis:** Analyze their communication style. Was it clear, structured, and confident? Did they seem rushed or nervous?
 5.  **Actionable Improvement Tips:** Provide a numbered list of 3-5 encouraging and actionable tips.
 
 Return the result as a JSON object. Your tone should be supportive and professional.`,
 });
 
-export const providePersonalizedFeedbackFlow = ai.defineFlow(
+const providePersonalizedFeedbackFlow = ai.defineFlow(
   {
     name: 'providePersonalizedFeedbackFlow',
     inputSchema: ProvidePersonalizedFeedbackInputSchema,
@@ -59,3 +60,8 @@ export const providePersonalizedFeedbackFlow = ai.defineFlow(
     return ProvidePersonalizedFeedbackOutputSchema.parse(output);
   }
 );
+
+
+export async function getPersonalizedFeedback(input: ProvidePersonalizedFeedbackInput): Promise<ProvidePersonalizedFeedbackOutput> {
+    return await providePersonalizedFeedbackFlow(input);
+}

@@ -9,13 +9,14 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { Progress } from '@/components/ui/progress';
-import { getInterviewQuestions } from '@/app/actions';
+import { getInterviewQuestionsAction } from '@/app/actions';
 import { useToast } from '@/hooks/use-toast';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import type { InterviewTranscriptItem } from '@/lib/types';
 import { saveSession } from '@/lib/data';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { motion } from 'framer-motion';
+import type { GenerateInterviewQuestionsInput } from '@/ai/flows/generate-interview-questions';
 
 const INTERVIEW_DURATION_MIN = 45;
 
@@ -83,7 +84,7 @@ export default function InterviewPage() {
   React.useEffect(() => {
     async function fetchQuestions() {
       try {
-        const response = await getInterviewQuestions(interviewConfig as any);
+        const response = await getInterviewQuestionsAction(interviewConfig as GenerateInterviewQuestionsInput);
         setQuestions(response.questions);
       } catch (error) {
         toast({

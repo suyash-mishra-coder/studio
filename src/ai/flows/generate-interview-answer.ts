@@ -1,9 +1,10 @@
+
 'use server';
 
 import { z } from 'zod';
 import { ai } from '@/ai/genkit';
 
-export const GenerateInterviewAnswerInputSchema = z.object({
+const GenerateInterviewAnswerInputSchema = z.object({
   jobDescription: z.string().describe('The full job description for the role.'),
   interviewQuestion: z.string().describe('The specific interview question to answer.'),
   experienceLevel: z.string().describe('The candidate\'s experience level (e.g., Junior, Senior).'),
@@ -11,7 +12,7 @@ export const GenerateInterviewAnswerInputSchema = z.object({
 
 export type GenerateInterviewAnswerInput = z.infer<typeof GenerateInterviewAnswerInputSchema>;
 
-export const GenerateInterviewAnswerOutputSchema = z.object({
+const GenerateInterviewAnswerOutputSchema = z.object({
   answer: z.string().describe('A well-structured, detailed answer to the interview question, tailored to the job description. Use the STAR (Situation, Task, Action, Result) method for behavioral questions.'),
   keyPoints: z.array(z.string()).describe('A bulleted list of the most important talking points or concepts to include in the answer.'),
   deliveryTips: z.string().describe('Constructive tips on how to effectively deliver this answer, focusing on tone, confidence, and clarity.'),
@@ -44,7 +45,7 @@ Based on the job description and question, generate the following:
 Your response must be professional, supportive, and highly tailored to the provided context.`,
 });
 
-export const generateInterviewAnswerFlow = ai.defineFlow(
+const generateInterviewAnswerFlow = ai.defineFlow(
   {
     name: 'generateInterviewAnswerFlow',
     inputSchema: GenerateInterviewAnswerInputSchema,
@@ -59,3 +60,8 @@ export const generateInterviewAnswerFlow = ai.defineFlow(
     return output;
   }
 );
+
+// This is the only export from this file.
+export async function generateInterviewAnswer(input: GenerateInterviewAnswerInput): Promise<GenerateInterviewAnswerOutput> {
+    return await generateInterviewAnswerFlow(input);
+}
