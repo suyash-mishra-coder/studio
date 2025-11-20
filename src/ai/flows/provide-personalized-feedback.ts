@@ -46,7 +46,7 @@ Your task is to provide a fair and constructive evaluation.
 Return the result as a JSON object. Your tone should be supportive and professional.`,
 });
 
-const providePersonalizedFeedbackFlow = ai.defineFlow(
+export const providePersonalizedFeedbackFlow = ai.defineFlow(
   {
     name: 'providePersonalizedFeedbackFlow',
     inputSchema: ProvidePersonalizedFeedbackInputSchema,

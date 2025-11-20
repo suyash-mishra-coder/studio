@@ -35,7 +35,7 @@ The questions should cover a range of complexities and include:
 Ensure the questions are distinct and require in-depth answers.`,
 });
 
-const generateInterviewQuestionsFlow = ai.defineFlow(
+export const generateInterviewQuestionsFlow = ai.defineFlow(
   {
     name: 'generateInterviewQuestionsFlow',
     inputSchema: GenerateInterviewQuestionsInputSchema,

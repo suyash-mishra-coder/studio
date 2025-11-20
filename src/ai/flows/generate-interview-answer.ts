@@ -45,7 +45,7 @@ Based on the job description and question, generate the following:
 Your response must be professional, supportive, and highly tailored to the provided context.`,
 });
 
-const generateInterviewAnswerFlow = ai.defineFlow(
+export const generateInterviewAnswerFlow = ai.defineFlow(
   {
     name: 'generateInterviewAnswerFlow',
     inputSchema: GenerateInterviewAnswerInputSchema,
@@ -61,7 +61,7 @@ const generateInterviewAnswerFlow = ai.defineFlow(
   }
 );
 
-// This is the only export from this file.
+
 export async function generateInterviewAnswer(input: GenerateInterviewAnswerInput): Promise<GenerateInterviewAnswerOutput> {
     return await generateInterviewAnswerFlow(input);
 }
